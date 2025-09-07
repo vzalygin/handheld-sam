@@ -146,7 +146,8 @@ void OutputSound() {}
 
 #endif
 
-int debug = 0;
+// Definition moved to debug.c
+extern int debug;
 
 int main(int argc, char **argv)
 {

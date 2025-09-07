@@ -92,7 +92,8 @@ void Init()
 
     bufferpos = 0;
     // TODO, check for free the memory, 10 seconds of output should be more than enough
-    buffer = malloc(22050*10);
+    // Max HEAP size is ~59KB, so 22050*2 = ~43KB
+    buffer = malloc(22050*2u);
 
     /*
     freq2data = &mem[45136];

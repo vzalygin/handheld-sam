@@ -1,27 +1,26 @@
-OBJS = reciter.o sam.o render.o main.o debug.o
-
-CC = gcc
-
-# libsdl present
-CFLAGS =  -Wall -Os -DUSESDL `sdl-config --cflags`
-LFLAGS = `sdl-config --libs`
-
-# no libsdl present
-#CFLAGS =  -Wall -Os
-#LFLAGS =
+OBJS=reciter.o sam.o render.o main.o debug.o
+CC=gcc
+CFLAGS=-Wall -Werror -Os -fsanitize=address,undefined
+LFLAGS=-fsanitize=address,undefined
 
 sam: $(OBJS)
 	$(CC) -o sam $(OBJS) $(LFLAGS)
-
 %.o: src/%.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) -o $@ $(CFLAGS) -c $<
 
-package:
-	tar -cvzf sam.tar.gz README.md Makefile sing src/
+AVROBJS=reciter.oavr sam.oavr render.oavr debug.oavr
+AVRCC=avr-gcc
+MCU=avr5 # atmega64
+HEAP=--defsym=__heap_start=0x801100,--defsym=__heap_end=0x80ffff # All heap space is located in external memory, ~59KB
+AVRCFLAGS = -Wall -Werror -Os -mmcu=$(MCU) -DNODEBUG
+AVRLFLAGS = $(AVRCFLAGS) -r -o sam-avr.o -Wl,$(HEAP)
+
+avr-sam: $(AVROBJS)
+	$(AVRCC) $(AVROBJS) $(AVRLFLAGS)
+
+%.oavr: src/%.c
+	$(AVRCC) -o $@  $(AVRCFLAGS) -c $<
 
 clean:
 	rm -f *.o
-
-archive:
-	rm -f sam_windows.zip
-	cd ..; zip SAM/sam_windows.zip	SAM/sam.exe SAM/SDL.dll SAM/README.md SAM/demos/*.bat
+	rm -f *.oavr
