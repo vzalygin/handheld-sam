@@ -1,7 +1,13 @@
 .DS_Store
 *.o
+*.d
 *.oavr
 *.bin
 *.hex
+*.map
+*.elf
 /sam
 /.vscode
+/Project Backups
+/dep
+/default

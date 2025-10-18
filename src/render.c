@@ -590,27 +590,27 @@ do
 
         // get the ranking of each phoneme
         X = A;
-        mem56 = blendRank[A];
-        A = blendRank[Y];
+        mem56 = pgm_read_byte(&blendRank[A]);
+        A = pgm_read_byte(&blendRank[Y]);
 
         // compare the rank - lower rank value is stronger
         if (A == mem56)
         {
             // same rank, so use out blend lengths from each phoneme
-            phase1 = outBlendLength[Y];
-            phase2 = outBlendLength[X];
+            phase1 = pgm_read_byte(&outBlendLength[Y]);
+            phase2 = pgm_read_byte(&outBlendLength[X]);
         } else
         if (A < mem56)
         {
             // first phoneme is stronger, so us it's blend lengths
-            phase1 = inBlendLength[X];
-            phase2 = outBlendLength[X];
+            phase1 = pgm_read_byte(&inBlendLength[X]);
+            phase2 = pgm_read_byte(&outBlendLength[X]);
         } else
         {
             // second phoneme is stronger, so use it's blend lengths
             // note the out/in are swapped
-            phase1 = outBlendLength[Y];
-            phase2 = inBlendLength[Y];
+            phase1 = pgm_read_byte(&outBlendLength[Y]);
+            phase2 = pgm_read_byte(&inBlendLength[Y]);
         }
 
         Y = mem44;

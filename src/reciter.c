@@ -15,7 +15,7 @@ void Code37055(unsigned char mem59)
     X--;
     A = inputtemp[X];
     Y = A;
-    A = tab36376[Y];
+    A = pgm_read_byte(&tab36376[Y]);
     return;
 }
 
@@ -25,7 +25,7 @@ void Code37066(unsigned char mem58)
     X++;
     A = inputtemp[X];
     Y = A;
-    A = tab36376[Y];
+    A = pgm_read_byte(&tab36376[Y]);
 }
 
 unsigned char GetRuleByte(unsigned short mem62, unsigned char Y)

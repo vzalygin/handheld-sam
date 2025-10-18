@@ -155,7 +155,6 @@ int main(int argc, char **argv)
     int phonetic = 0;
 
     char* wavfilename = NULL;
-    char input[256];
 
     for(i=0; i<256; i++) input[i] = 0;
 

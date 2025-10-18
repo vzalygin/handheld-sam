@@ -1,6 +1,5 @@
 #include<stdio.h>
 
-int debug = 0;
 extern unsigned char signInputTable1[];
 extern unsigned char signInputTable2[];
 
