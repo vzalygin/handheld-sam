@@ -6,8 +6,8 @@
 *.hex
 *.map
 *.elf
-/sam
-/.vscode
-/Project Backups
-/dep
-/default
+sam/
+.vscode/
+Project Backups/
+dep/
+default/
