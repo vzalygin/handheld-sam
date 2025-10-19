@@ -1,7 +1,7 @@
-// #include <avr/io.h>
-// #include <avr/interrupt.h>
-// #include <avr/sleep.h>
-// #include <util/delay.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/sleep.h>
+#include <util/delay.h>
 
 #include <inttypes.h>
 #include <ctype.h>
@@ -17,25 +17,25 @@ extern int debug;
 // ������������ ���� �������� �������
 // ������������ ���� C
 // ��������� ������� ������ (�������� XMEM)
-// void init_xmem() {
-//    XMCRA = 0;
-//    XMCRB = 0;
-//    MCUCR = (1<<SRE);
-// }
+void init_xmem() {
+   XMCRA = 0;
+   XMCRB = 0;
+   MCUCR = (1<<SRE);
+}
 
-// void init_uart() {
-//    UBRR0L = 51; // 9600 ��� �� 8 ���
-//    UCSR0B = (1<<TXEN) | (1<<RXEN);
-//    UCSR0C = (3<<UCSZ00);
+void init_uart() {
+   UBRR0L = 51; // 9600 ��� �� 8 ���
+   UCSR0B = (1<<TXEN) | (1<<RXEN);
+   UCSR0C = (3<<UCSZ00);
 
-//    stdout = &uart_stdout;
-//    stdin = &uart_stdin;
-// }
+   stdout = &uart_stdout;
+   stdin = &uart_stdin;
+}
 
-// void init_io() {
-//    DDRB = 0b11111111;     // ��������� PA ��� �����   
-//    PORTB = 0b10101010;
-// }
+void init_io() {
+   DDRB = 0b11111111;     // ��������� PA ��� �����   
+   PORTB = 0b10101010;
+}
 
 void say(char * input, int phonetic) {
    strncat(input, " ", 255);

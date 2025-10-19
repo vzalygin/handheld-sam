@@ -3,7 +3,7 @@
 
 #define PROGMEM /*PROGMEM*/
 
-const unsigned char pgm_read_byte(const unsigned char * ptr) {
+static const char pgm_read_byte(const char * ptr) {
     return *ptr;
 }
 

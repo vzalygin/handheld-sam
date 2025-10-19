@@ -1,25 +1,9 @@
 #include<stdio.h>
 
+int debug = 0;
+
 extern unsigned char signInputTable1[];
 extern unsigned char signInputTable2[];
-
-#ifdef NODEBUG
-
-void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, unsigned char *stress) {}
-
-void PrintOutput(
-    unsigned char *flag,
-    unsigned char *f1,
-    unsigned char *f2,
-    unsigned char *f3,
-    unsigned char *a1,
-    unsigned char *a2,
-    unsigned char *a3,
-    unsigned char *p) {}
-
-void PrintRule(int offset) {}
-
-#else
 
 void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, unsigned char *stress)
 {
@@ -90,5 +74,3 @@ void PrintRule(int offset)
     } while ((A&128)==0);
     printf("\n");
 }
-
-#endif

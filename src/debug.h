@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-int debug = 0;
+extern int debug;
 
 void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength,
                    unsigned char *stress);

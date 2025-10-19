@@ -184,7 +184,7 @@ void Write(unsigned char p, unsigned char Y, unsigned char value)
 // Code48227()
 void RenderSample(unsigned char *mem66)
 {
-    printf("RenderSample(mem66: %d)\n", mem66);
+    printf("RenderSample(mem66: %hhn)\n", mem66);
     int tempA;
     // current phoneme's index
     mem49 = Y;
