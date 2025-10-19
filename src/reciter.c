@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "reciter.h"
-#include "ReciterTabs.h"
-#include "debug.h"
+
+#include "debug_sam.h"
 
 unsigned char A, X, Y;
-extern int debug;
 
 static unsigned char inputtemp[256];   // secure copy of input tab36096
 
@@ -35,10 +35,10 @@ unsigned char GetRuleByte(unsigned short mem62, unsigned char Y)
     if (mem62 >= 37541)
     {
         address -= 37541;
-        return rules2[address+Y];
+        return pgm_read_byte(&rules2[address+Y]);
     }
     address -= 32000;
-    return rules[address+Y];
+    return pgm_read_byte(&rules[address+Y]);
 }
 
 int TextToPhonemes(unsigned char *input) // Code36484
@@ -109,7 +109,7 @@ pos36554:
         if (A != '.') break;
         X++;
         Y = inputtemp[X];
-        A = tab36376[Y] & 1;
+        A = pgm_read_byte(&tab36376[Y]) & 1;
         if(A != 0) break;
         mem56++;
         X = mem56;
@@ -121,7 +121,7 @@ pos36554:
     //pos36607:
     A = mem64;
     Y = A;
-    A = tab36376[A];
+    A = pgm_read_byte(&tab36376[A]);
     mem57 = A;
     if((A&2) != 0)
     {
@@ -166,7 +166,7 @@ pos36677:
 
     // go to the right rules for this character.
     X = mem64 - 'A';
-    mem62 = tab37489[X] | (tab37515[X]<<8);
+    mem62 = pgm_read_byte(&tab37489[X]) | (pgm_read_byte(&tab37515[X])<<8);
 
     // -------------------------------------
     // go to next rule
@@ -246,7 +246,7 @@ pos36791:
         //36800: BPL 36805
         if ((A & 128) != 0) goto pos37180;
         X = A & 127;
-        A = tab36376[X] & 128;
+        A = pgm_read_byte(&tab36376[X]) & 128;
         if (A == 0) break;
         X = mem59-1;
         A = inputtemp[X];
@@ -361,7 +361,7 @@ pos37077:
     X++;
     Y = inputtemp[X];
     X--;
-    A = tab36376[Y] & 128;
+    A = pgm_read_byte(&tab36376[Y]) & 128;
     if(A == 0) goto pos37108;
     X++;
     A = inputtemp[X];
@@ -416,7 +416,7 @@ pos37184:
     A = GetRuleByte(mem62, Y);
     mem57 = A;
     X = A;
-    A = tab36376[X] & 128;
+    A = pgm_read_byte(&tab36376[X]) & 128;
     if(A == 0) goto pos37226;
     X = mem58+1;
     A = inputtemp[X];

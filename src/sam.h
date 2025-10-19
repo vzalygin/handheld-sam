@@ -1,6 +1,11 @@
 #ifndef SAM_H
 #define SAM_H
 
+#include "SamTabs.h"
+#include "debug_sam.h"
+#include "render.h"
+#include "reciter.h"
+
 void SetInput(char *_input);
 void SetSpeed(unsigned char _speed);
 void SetPitch(unsigned char _pitch);

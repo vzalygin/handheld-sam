@@ -3,10 +3,6 @@
 #include <stdlib.h>
 
 #include "render.h"
-#include "RenderTabs.h"
-
-#include "debug.h"
-extern int debug;
 
 unsigned char wait1 = 7;
 unsigned char wait2 = 6;
@@ -97,6 +93,7 @@ void Output8Bit(int index, unsigned char A)
 // 174=amplitude3
 unsigned char Read(unsigned char p, unsigned char Y)
 {
+    printf("Read(p: %hhu, Y: %hhu)\n",p,Y);
     switch(p)
     {
     case 168: return pitches[Y];
@@ -113,7 +110,7 @@ unsigned char Read(unsigned char p, unsigned char Y)
 
 void Write(unsigned char p, unsigned char Y, unsigned char value)
 {
-
+    printf("Write(p: %hhu, Y: %hhu, value: %hhu)\n", p, Y, value);
     switch(p)
     {
     case 168: pitches[Y] = value; return;
@@ -187,6 +184,7 @@ void Write(unsigned char p, unsigned char Y, unsigned char value)
 // Code48227()
 void RenderSample(unsigned char *mem66)
 {
+    printf("RenderSample(mem66: %d)\n", mem66);
     int tempA;
     // current phoneme's index
     mem49 = Y;
@@ -207,7 +205,7 @@ void RenderSample(unsigned char *mem66)
     // /X                     4          0x17
 
     // get value from the table
-    mem53 = tab48426[X];
+    mem53 = pgm_read_byte(&tab48426[X]);
     mem47 = X;      //46016+mem[56]*256
 
     // voiced sample?
@@ -230,7 +228,7 @@ pos48274:
 
     // get the next sample from the table
     // mem47*256 = offset to start of samples
-    A = sampleTable[mem47*256+Y];
+    A = pgm_read_byte(&sampleTable[mem47*256+Y]);
 pos48280:
 
     // left shift to get the high bit
@@ -292,7 +290,7 @@ pos48315:
         //A = Read(mem47, Y);
 
         // fetch value from table
-        A = sampleTable[mem47*256+Y];
+        A = pgm_read_byte(&sampleTable[mem47*256+Y]);
 
         // loop 8 times
         //pos48327:
@@ -418,7 +416,7 @@ do
     //  pos47615:
 
     // get the stress amount (more stress = higher pitch)
-    phase1 = tab47492[stressOutput[Y] + 1];
+    phase1 = pgm_read_byte(&tab47492[stressOutput[Y] + 1]);
 
     // get number of frames to write
     phase2 = phonemeLengthOutput[Y];
@@ -429,10 +427,10 @@ do
     {
         frequency1[X] = freq1data[Y];     // F1 frequency
         frequency2[X] = freq2data[Y];     // F2 frequency
-        frequency3[X] = freq3data[Y];     // F3 frequency
-        amplitude1[X] = ampl1data[Y];     // F1 amplitude
-        amplitude2[X] = ampl2data[Y];     // F2 amplitude
-        amplitude3[X] = ampl3data[Y];     // F3 amplitude
+        frequency3[X] = pgm_read_byte(&freq3data[Y]);     // F3 frequency
+        amplitude1[X] = pgm_read_byte(&ampl1data[Y]);     // F1 amplitude
+        amplitude2[X] = pgm_read_byte(&ampl2data[Y]);     // F2 amplitude
+        amplitude3[X] = pgm_read_byte(&ampl3data[Y]);     // F3 amplitude
         sampledConsonantFlag[X] = sampledConsonantFlags[Y];        // phoneme data for sampled consonants
         pitches[X] = pitch + phase1;      // pitch
         X++;
@@ -582,6 +580,7 @@ do
         // get the current and following phoneme
         Y = phonemeIndexOutput[X];
         A = phonemeIndexOutput[X+1];
+        // printf("A=phoneme X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
         X++;
 
         // exit loop at end token
@@ -592,6 +591,7 @@ do
         X = A;
         mem56 = pgm_read_byte(&blendRank[A]);
         A = pgm_read_byte(&blendRank[Y]);
+        // printf("A=PGM X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
 
         // compare the rank - lower rank value is stronger
         if (A == mem56)
@@ -615,14 +615,16 @@ do
 
         Y = mem44;
         A = mem49 + phonemeLengthOutput[mem44]; // A is mem49 + length
+        // printf("A=mem49 X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
         mem49 = A; // mem49 now holds length + position
         A = A + phase2; //Maybe Problem because of carry flag
-
+        // printf("A=A X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
         //47776: ADC 42
         speedcounter = A;
         mem47 = 168;
         phase3 = mem49 - phase1; // what is mem49
         A = phase1 + phase2; // total transition?
+        // printf("A=phase X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
         mem38 = A;
 
         X = A;
@@ -697,6 +699,7 @@ do
             while(1)     //while No. 3
             {
                 A = Read(mem47, Y) + mem53; //carry alway cleared
+                printf("A=Read2 X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
 
                 mem48 = A;
                 Y++;
@@ -717,11 +720,13 @@ do
                 }
                 //pos47945:
                 Write(mem47, Y, mem48);
+                printf("WRITE X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
             } //while No. 3
 
             //pos47952:
             mem47++;
             //if (mem47 != 175) goto pos47810;
+            printf("X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47, speedcounter, mem49);
         } while (mem47 != 175);     //while No. 2
         //pos47963:
         mem44++;
@@ -767,9 +772,11 @@ do
     //amplitude rescaling
     for(i=255; i>=0; i--)
     {
-        amplitude1[i] = amplitudeRescale[amplitude1[i]];
-        amplitude2[i] = amplitudeRescale[amplitude2[i]];
-        amplitude3[i] = amplitudeRescale[amplitude3[i]];
+        printf("rescale before amplitude1: %hhu\n", amplitude1[i]);
+        amplitude1[i] = pgm_read_byte(&amplitudeRescale[amplitude1[i]]);
+        printf("rescale amplitude1: %hhu\n", amplitude1[i]);
+        amplitude2[i] = pgm_read_byte(&amplitudeRescale[amplitude2[i]]);
+        amplitude3[i] = pgm_read_byte(&amplitudeRescale[amplitude3[i]]);
     }
 
     Y = 0;
@@ -782,6 +789,8 @@ if (debug)
 {
     PrintOutput(sampledConsonantFlag, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
 }
+
+if (debug) printf("process the frames\n");
 
 // PROCESS THE FRAMES
 //
@@ -819,9 +828,9 @@ if (debug)
             unsigned int p3 = phase3 * 256;
             int k;
             for (k=0; k<5; k++) {
-                signed char sp1 = (signed char)sinus[0xff & (p1>>8)];
-                signed char sp2 = (signed char)sinus[0xff & (p2>>8)];
-                signed char rp3 = (signed char)rectangle[0xff & (p3>>8)];
+                signed char sp1 = (signed char)pgm_read_byte(&sinus[0xff & (p1>>8)]);
+                signed char sp2 = (signed char)pgm_read_byte(&sinus[0xff & (p2>>8)]);
+                signed char rp3 = (signed char)pgm_read_byte(&rectangle[0xff & (p3>>8)]);
                 signed int sin1 = sp1 * ((unsigned char)amplitude1[Y] & 0x0f);
                 signed int sin2 = sp2 * ((unsigned char)amplitude2[Y] & 0x0f);
                 signed int rect = rp3 * ((unsigned char)amplitude3[Y] & 0x0f);
@@ -939,6 +948,7 @@ pos48159:
     mem44 = 1;
     mem66 = Y;
     Y = mem49;
+    if (debug) printf("output ready\n");
     return;
 }
 
