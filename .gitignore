@@ -6,6 +6,7 @@
 *.hex
 *.map
 *.elf
+*.workspace
 sam/
 .vscode/
 Project Backups/

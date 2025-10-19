@@ -172,7 +172,7 @@ int main(int argc, char **argv)
             strncat(input, argv[i], 255);
             strncat(input, " ", 255);
         } else
-        {
+        {   
             if (strcmp(&argv[i][1], "wav")==0)
             {
                 wavfilename = argv[i+1];
