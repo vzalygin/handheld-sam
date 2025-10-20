@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <string.h>
 
+#define strcpy_P strcpy
 #define HELP_SIZE 37
 static const char HELP_MSG[HELP_SIZE][60] PROGMEM = {
    "options:\n",
@@ -51,7 +52,7 @@ static void print_usage() {
    uint8_t i;
    for (i = 0; i < HELP_SIZE; ++i) {
       strcpy_P(help_buffer, HELP_MSG[i]);
-      printf(help_buffer);
+      printf("%s", help_buffer);
    }
 }
 

@@ -3,8 +3,6 @@
 
 #define PROGMEM /*PROGMEM*/
 
-static const char pgm_read_byte(const char * ptr) {
-    return *ptr;
-}
+#define pgm_read_byte(addr) (*(addr))
 
 #endif
