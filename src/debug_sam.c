@@ -1,8 +1,12 @@
-#include <stdio.h>
-
 #include "debug_sam.h"
 
-int debug = 0;
+int debug 		DATAMEM = 0;
+char printf_buffer[256] NOINITMEM;
+
+const char * copy_pgm_str(const char * pgm_str) {
+    strcpy_P(printf_buffer, pgm_str);
+    return printf_buffer;
+}
 
 void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, unsigned char *stress)
 {

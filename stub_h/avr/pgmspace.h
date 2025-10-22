@@ -5,4 +5,6 @@
 
 #define pgm_read_byte(addr) (*(addr))
 
+#define strcpy_P strcpy
+
 #endif

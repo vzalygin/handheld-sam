@@ -1,7 +1,5 @@
 // #include <avr/io.h>
 // #include <avr/interrupt.h>
-// #include <avr/sleep.h>
-// #include <util/delay.h>
 
 #include <inttypes.h>
 #include <ctype.h>
@@ -43,19 +41,19 @@ void say(char * input, int phonetic) {
    for(i=0; input[i] != 0; i++) input[i] = toupper((int)input[i]);
    if (debug) {
       if (phonetic) {
-	      printf("phonetic input: %s\n", input);
+	 printf("phonetic input: %s\n", input);
       } else {
-	      printf("text input: %s\n", input);
+	 printf("text input: %s\n", input);
       }
    }
 
    if (!phonetic) {
       strncat(input, "[", 255);
       if (!TextToPhonemes((unsigned char *)input)) {
-	      return;
+	 return;
       }
       if (debug) {
-	      printf("phonetic input: %s\n", input);
+	 printf("phonetic input: %s\n", input);
       }
    } else {
       strncat(input, "\x9b", 255);

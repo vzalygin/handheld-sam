@@ -6,10 +6,12 @@
 // #include <avr/sleep.h>
 // #include <util/delay.h>
 
-// #include <stdio.h>
-// #include <inttypes.h>
+#include <stdio.h>
+#include <inttypes.h>
 
-// extern FILE uart_stdout;
-// extern FILE uart_stdin;
+#include "memmanagment.h"
+
+extern FILE uart_stdout;
+extern FILE uart_stdin;
 
 #endif

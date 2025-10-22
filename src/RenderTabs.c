@@ -84,7 +84,7 @@ const unsigned char inBlendLength[] PROGMEM =
 // 67: **    27          00011011
 // 70: **    25          00011001
 // tab45936
-const unsigned char sampledConsonantFlags[] =
+const unsigned char sampledConsonantFlags[] PROGMEM =
 {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -100,7 +100,7 @@ const unsigned char sampledConsonantFlags[] =
 
 
 //tab45056
-unsigned char freq1data[] =
+unsigned char freq1data[] DATAMEM =
 {
     0x00 ,0x13 ,0x13 ,0x13 ,0x13 , 0xA , 0xE ,0x12
     ,  0x18 ,0x1A ,0x16 ,0x14 ,0x10 ,0x14 , 0xE ,0x12
@@ -115,7 +115,7 @@ unsigned char freq1data[] =
 };
 
 //tab451356
-unsigned char freq2data[] =
+unsigned char freq2data[] DATAMEM =
 {
     0x00 , 0x43 , 0x43 , 0x43 , 0x43 , 0x54 , 0x48 , 0x42 ,
     0x3E , 0x28 , 0x2C , 0x1E , 0x24 , 0x2C , 0x48 , 0x30 ,

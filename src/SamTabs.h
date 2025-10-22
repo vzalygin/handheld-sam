@@ -3,6 +3,8 @@
 
 #include <avr/pgmspace.h>
 
+#include "memmanagment.h"
+
 extern const unsigned char stressInputTable[] PROGMEM;
 
 extern const unsigned char signInputTable1[] PROGMEM;

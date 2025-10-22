@@ -1,11 +1,7 @@
 #include "render.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-unsigned char wait1 = 7;
-unsigned char wait2 = 6;
+unsigned char wait1 DATAMEM = 7;
+unsigned char wait2 DATAMEM = 6;
 
 extern unsigned char A, X, Y;
 extern unsigned char mem44;
@@ -25,24 +21,24 @@ extern unsigned char phonemeIndexOutput[60];   // tab47296
 extern unsigned char stressOutput[60];         // tab47365
 extern unsigned char phonemeLengthOutput[60];  // tab47416
 
-unsigned char pitches[256];  // tab43008
-
-unsigned char frequency1[256];
-unsigned char frequency2[256];
-unsigned char frequency3[256];
-
-unsigned char amplitude1[256];
-unsigned char amplitude2[256];
-unsigned char amplitude3[256];
-
-unsigned char sampledConsonantFlag[256];  // tab44800
-
-void AddInflection(unsigned char mem48, unsigned char phase1);
-unsigned char trans(unsigned char mem39212, unsigned char mem39213);
-
 // contains the final soundbuffer
 extern int bufferpos;
 extern char* buffer;
+
+unsigned char pitches[256];  // tab43008
+
+unsigned char frequency1[256] NOINITMEM;
+unsigned char frequency2[256] NOINITMEM;
+unsigned char frequency3[256] NOINITMEM;
+
+unsigned char amplitude1[256] NOINITMEM;
+unsigned char amplitude2[256] NOINITMEM;
+unsigned char amplitude3[256] NOINITMEM;
+
+unsigned char sampledConsonantFlag[256] NOINITMEM;  // tab44800
+
+void AddInflection(unsigned char mem48, unsigned char phase1);
+unsigned char trans(unsigned char mem39212, unsigned char mem39213);
 
 // timetable for more accurate c64 simulation
 int timetable[5][5] = {{162, 167, 167, 127, 128},
@@ -74,36 +70,36 @@ void Output8Bit(int index, unsigned char A) {
 //  173=amplitude2
 //  174=amplitude3
 unsigned char Read(unsigned char p, unsigned char Y) {
-    printf("Read(p: %hhu, Y: %hhu, ", p, Y);
+    //printf("Read(p: %hhu, Y: %hhu, ", p, Y);
     unsigned char res;
     switch (p) {
         case 168:
             res = pitches[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
         case 169:
             res = frequency1[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
         case 170:
             res = frequency2[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
         case 171:
             res = frequency3[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
         case 172:
             res = amplitude1[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
         case 173:
             res = amplitude2[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
         case 174:
             res = amplitude3[Y];
-            printf("res: %hhu)\n", res);
+            //printf("res: %hhu)\n", res);
             return res;
     }
     printf("Error reading to tables");
@@ -111,7 +107,7 @@ unsigned char Read(unsigned char p, unsigned char Y) {
 }
 
 void Write(unsigned char p, unsigned char Y, unsigned char value) {
-    printf("Write(p: %hhu, Y: %hhu, value: %hhu)\n", p, Y, value);
+    //printf("Write(p: %hhu, Y: %hhu, value: %hhu)\n", p, Y, value);
     switch (p) {
         case 168:
             pitches[Y] = value;
@@ -194,11 +190,11 @@ void Write(unsigned char p, unsigned char Y, unsigned char value) {
 
 // Code48227()
 void RenderSample(unsigned char* mem66) {
-    printf("RenderSample(mem66: %d)\n", *mem66);
+    //printf("RenderSample(mem66: %d)\n", *mem66);
     int tempA;
     // current phoneme's index
     mem49 = Y;
-    printf("mem49 = Y %hhu\n", mem49);
+    //printf("mem49 = Y %hhu\n", mem49);
 
     // mask low three bits and subtract 1 get value to
     // convert 0 bits on unvoiced samples.
@@ -424,19 +420,18 @@ void Render() {
             amplitude1[X] = pgm_read_byte(&ampl1data[Y]);  // F1 amplitude
             amplitude2[X] = pgm_read_byte(&ampl2data[Y]);  // F2 amplitude
             amplitude3[X] = pgm_read_byte(&ampl3data[Y]);  // F3 amplitude
-            sampledConsonantFlag[X] =
-                sampledConsonantFlags[Y];  // phoneme data for sampled
+            sampledConsonantFlag[X] = pgm_read_byte(&sampledConsonantFlags[Y]);  // phoneme data for sampled
                                            // consonants
             pitches[X] = pitch + phase1;   // pitch
-            printf("frequency1[%hhu] = %hhu\n", X, frequency1[X]);
-            printf("frequency2[%hhu] = %hhu\n", X, frequency2[X]);
-            printf("frequency3[%hhu] = %hhu\n", X, frequency3[X]);
-            printf("amplitude1[%hhu] = %hhu\n", X, amplitude1[X]);
-            printf("amplitude2[%hhu] = %hhu\n", X, amplitude2[X]);
-            printf("amplitude3[%hhu] = %hhu\n", X, amplitude3[X]);
-            printf("sampledConsonantFlag[%hhu] = %hhu\n", X,
-                   sampledConsonantFlag[X]);
-            printf("pitches[%hhu] = %hhu\n", X, pitches[X]);
+            //printf("frequency1[%hhu] = %hhu\n", X, frequency1[X]);
+            //printf("frequency2[%hhu] = %hhu\n", X, frequency2[X]);
+            //printf("frequency3[%hhu] = %hhu\n", X, frequency3[X]);
+            //printf("amplitude1[%hhu] = %hhu\n", X, amplitude1[X]);
+            //printf("amplitude2[%hhu] = %hhu\n", X, amplitude2[X]);
+            //printf("amplitude3[%hhu] = %hhu\n", X, amplitude3[X]);
+            //printf("sampledConsonantFlag[%hhu] = %hhu\n", X,
+            //       sampledConsonantFlag[X]);
+            //printf("pitches[%hhu] = %hhu\n", X, pitches[X]);
             X++;
             phase2--;
         } while (phase2 != 0);
@@ -588,9 +583,6 @@ void Render() {
         // get the current and following phoneme
         Y = phonemeIndexOutput[X];
         A = phonemeIndexOutput[X + 1];
-        // printf("A=phoneme X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu,
-        // speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47,
-        // speedcounter, mem49);
         X++;
 
         // exit loop at end token
@@ -600,9 +592,6 @@ void Render() {
         X = A;
         mem56 = pgm_read_byte(&blendRank[A]);
         A = pgm_read_byte(&blendRank[Y]);
-        // printf("A=PGM X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu,
-        // speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47,
-        // speedcounter, mem49);
 
         // compare the rank - lower rank value is stronger
         if (A == mem56) {
@@ -622,22 +611,13 @@ void Render() {
 
         Y = mem44;
         A = mem49 + phonemeLengthOutput[mem44];  // A is mem49 + length
-        // printf("A=mem49 X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu,
-        // speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47,
-        // speedcounter, mem49);
         mem49 = A;       // mem49 now holds length + position
         A = A + phase2;  // Maybe Problem because of carry flag
-        // printf("A=A X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu,
-        // speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47,
-        // speedcounter, mem49);
         // 47776: ADC 42
         speedcounter = A;
         mem47 = 168;
         phase3 = mem49 - phase1;  // what is mem49
         A = phase1 + phase2;      // total transition?
-        // printf("A=phase X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu, mem47 %hhu,
-        // speedcounter %hhu, mem49: %hhu\n", X, Y, A, mem44, mem47,
-        // speedcounter, mem49);
         mem38 = A;
 
         X = A;
@@ -675,9 +655,6 @@ void Render() {
                     mem36 = mem49 - mem36;   // center index of current phoneme
                     A = Read(mem47, mem37);  // value at center of next phoneme
                                              // - end interpolation value
-                    // printf("A=ReadIf X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu,
-                    // mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A,
-                    // mem44, mem47, speedcounter, mem49); A = mem[address];
 
                     Y = mem36;  // start index of interpolation
                     mem53 =
@@ -686,9 +663,6 @@ void Render() {
                 } else {
                     // value to interpolate to
                     A = Read(mem47, speedcounter);
-                    // printf("A=ReadElse X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu,
-                    // mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A,
-                    // mem44, mem47, speedcounter, mem49);
                     //  position to start interpolation from
                     Y = phase3;
                     // value to interpolate from
@@ -718,10 +692,7 @@ void Render() {
                 while (1)  // while No. 3
                 {
                     A = Read(mem47, Y) + mem53;  // carry alway cleared
-                    printf("A=%hhu, mem53=%hhu\n", A, mem53);
-                    // printf("A=Read2 X: %hhu, Y: %hhu, A: %hhu, mem44 %hhu,
-                    // mem47 %hhu, speedcounter %hhu, mem49: %hhu\n", X, Y, A,
-                    // mem44, mem47, speedcounter, mem49);
+                    //printf("A=%hhu, mem53=%hhu\n", A, mem53);
 
                     mem48 = A;
                     Y++;

@@ -5,9 +5,9 @@
 
 #include "debug_sam.h"
 
-unsigned char A, X, Y;
+unsigned char A NOINITMEM, X NOINITMEM, Y NOINITMEM;
 
-static unsigned char inputtemp[256];   // secure copy of input tab36096
+static unsigned char inputtemp[256] NOINITMEM;   // secure copy of input tab36096
 
 void Code37055(unsigned char mem59)
 {

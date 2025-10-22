@@ -5,6 +5,7 @@
 #include "debug_sam.h"
 #include "render.h"
 #include "reciter.h"
+#include "memmanagment.h"
 
 void SetInput(char *_input);
 void SetSpeed(unsigned char _speed);

@@ -2,6 +2,8 @@
 #define RECITER_C
 
 #include "ReciterTabs.h"
+#include "debug_sam.h"
+#include "memmanagment.h"
 
 //int TextToPhonemes(char *input, char *output);
 

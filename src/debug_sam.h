@@ -1,9 +1,14 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include "SamTabs.h"
+#include <stdio.h>
+#include <string.h>
+#include <avr/pgmspace.h>
 
-extern int debug;
+#include "SamTabs.h"
+#include "memmanagment.h"
+
+extern int debug DATAMEM;
 
 void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength,
                    unsigned char *stress);

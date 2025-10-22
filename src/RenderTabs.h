@@ -3,6 +3,8 @@
 
 #include <avr/pgmspace.h>
 
+#include "memmanagment.h"
+
 extern const unsigned char tab48426[5] PROGMEM;
 
 extern const unsigned char tab47492[] PROGMEM;
@@ -15,11 +17,11 @@ extern const unsigned char outBlendLength[] PROGMEM;
 
 extern const unsigned char inBlendLength[] PROGMEM;
 
-extern const unsigned char sampledConsonantFlags[];
+extern const unsigned char sampledConsonantFlags[] PROGMEM;
 
-extern unsigned char freq1data[];
+extern unsigned char freq1data[] DATAMEM;
 
-extern unsigned char freq2data[];
+extern unsigned char freq2data[] DATAMEM;
 
 extern unsigned char freq3data[] PROGMEM;
 

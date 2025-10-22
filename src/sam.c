@@ -4,40 +4,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-char input[256];  // tab39445
+char input[256] NOINITMEM;  // tab39445
 // standard sam sound
-unsigned char speed = 72;
-unsigned char pitch = 64;
-unsigned char mouth = 128;
-unsigned char throat = 128;
-int singmode = 0;
+unsigned char speed DATAMEM = 72;
+unsigned char pitch DATAMEM = 64;
+unsigned char mouth DATAMEM = 128;
+unsigned char throat DATAMEM = 128;
+int singmode DATAMEM = 0;
 
 extern int debug;
 
-unsigned char mem39;
-unsigned char mem44;
-unsigned char mem47;
-unsigned char mem49;
-unsigned char mem50;
-unsigned char mem51;
-unsigned char mem53;
-unsigned char mem56;
+unsigned char mem39 NOINITMEM;
+unsigned char mem44 NOINITMEM;
+unsigned char mem47 NOINITMEM;
+unsigned char mem49 NOINITMEM;
+unsigned char mem50 NOINITMEM;
+unsigned char mem51 NOINITMEM;
+unsigned char mem53 NOINITMEM;
+unsigned char mem56 NOINITMEM;
 
-unsigned char mem59 = 0;
+unsigned char mem59 DATAMEM = 0;
 
-unsigned char B, R, S;
+unsigned char B NOINITMEM; 
+unsigned char R NOINITMEM;
+unsigned char S NOINITMEM;
 
-unsigned char stress[256];         // numbers from 0 to 8
-unsigned char phonemeLength[256];  // tab40160
-unsigned char phonemeindex[256];
+unsigned char stress[256] NOINITMEM;         // numbers from 0 to 8
+unsigned char phonemeLength[256] NOINITMEM;  // tab40160
+unsigned char phonemeindex[256] NOINITMEM;
 
-unsigned char phonemeIndexOutput[60];   // tab47296
-unsigned char stressOutput[60];         // tab47365
-unsigned char phonemeLengthOutput[60];  // tab47416
+unsigned char phonemeIndexOutput[60] NOINITMEM;   // tab47296
+unsigned char stressOutput[60] NOINITMEM;         // tab47365
+unsigned char phonemeLengthOutput[60] NOINITMEM;  // tab47416
 
 // contains the final soundbuffer
-int bufferpos = 0;
-char *buffer = NULL;
+int bufferpos DATAMEM = 0;
+char *buffer DATAMEM = NULL;
 
 void SetInput(char *_input) {
     int i, l;
@@ -431,7 +433,6 @@ int Parser1() {
         // GET FIRST CHARACTER AT POSITION Y IN signInputTable
         // --> should change name to PhonemeNameTable1
         B = pgm_read_byte(&signInputTable1[S]);
-        // printf("R: %hhu; B: %hhu; S: %hhu; sign1: %hhu; sign2: %hhu; position: %hhu;\n", R, B, S, sign1, sign2, position);
 
         // FIRST CHARACTER MATCHES?
         if (B == sign1) {
@@ -601,8 +602,7 @@ void Parser2() {
 
         // DEBUG: Print phoneme and index
         if (debug && B != 255)
-            printf("%d: %c%c\n", R, pgm_read_byte(&signInputTable1[B]),
-                   pgm_read_byte(&signInputTable2[B]));
+            printf("%d: %c%c\n", R, pgm_read_byte(&signInputTable1[B]), pgm_read_byte(&signInputTable2[B]));
 
         // Is phoneme pause?
         if (B == 0) {
@@ -644,8 +644,7 @@ void Parser2() {
         if (debug)
             if (B == 20)
                 printf(
-                    "RULE: insert WX following diphtong NOT ending in IY "
-                    "sound\n");
+                    "RULE: insert WX following diphtong NOT ending in IY sound\n");
         if (debug)
             if (B == 21)
                 printf(
@@ -750,10 +749,7 @@ void Parser2() {
                         if (B != 0) {
                             // Insert a glottal stop and move forward
                             if (debug)
-                                printf(
-                                    "RULE: Insert glottal stop between two "
-                                    "stressed vowels with space between "
-                                    "them\n");
+                                printf("RULE: Insert glottal stop between two stressed vowels with space between them\n");
                             // 31 = 'Q'
                             Insert(R, 31, mem59, 0);
                             pos++;
@@ -876,8 +872,7 @@ void Parser2() {
                 if (debug)
                     if (B == 0)
                         printf(
-                            "RULE: K <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> "
-                            "KX <VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
+                            "RULE: K <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> KX <VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
                 // Replace with KX
                 if (B == 0) phonemeindex[pos] = 75;  // 'KX'
             }
@@ -909,8 +904,7 @@ void Parser2() {
                 // replace G with GX and continue processing next phoneme
                 if (debug)
                     printf(
-                        "RULE: G <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> GX "
-                        "<VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
+                        "RULE: G <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> GX <VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
                 phonemeindex[pos] = 63;  // 'GX'
                 pos++;
                 continue;
@@ -1044,8 +1038,7 @@ void Parser2() {
             //  Set phonemes to DX
             if (debug)
                 printf(
-                    "RULE: Soften T or D following vowel or ER and preceding a "
-                    "pause -> DX\n");
+                    "RULE: Soften T or D following vowel or ER and preceding a pause -> DX\n");
             phonemeindex[pos] = 30;  // 'DX'
         } else {
             B = phonemeindex[R + 1];
@@ -1057,8 +1050,7 @@ void Parser2() {
             if (debug)
                 if (B != 0)
                     printf(
-                        "RULE: Soften T or D following vowel or ER and "
-                        "preceding a pause -> DX\n");
+                        "RULE: Soften T or D following vowel or ER and preceding a pause -> DX\n");
             if (B != 0) phonemeindex[pos] = 30;  // 'DX'
         }
 
@@ -1146,8 +1138,7 @@ void AdjustLengths() {
                     B = (B >> 1) + B + 1;
                     if (debug)
                         printf(
-                            "RULE: Lengthen <FRICATIVE> or <VOICED> between "
-                            "<VOWEL> and <PUNCTUATION> by 1.5\n");
+                            "RULE: Lengthen <FRICATIVE> or <VOICED> between <VOWEL> and <PUNCTUATION> by 1.5\n");
                     if (debug) printf("PRE\n");
                     if (debug)
                         printf("phoneme %d (%c%c) length %d\n", R,
@@ -1213,8 +1204,7 @@ void AdjustLengths() {
 
                         if (debug)
                             printf(
-                                "RULE: <VOWEL> <RX | LX> <CONSONANT> - "
-                                "decrease length by 1\n");
+                                "RULE: <VOWEL> <RX | LX> <CONSONANT> - decrease length by 1\n");
                         if (debug) printf("PRE\n");
                         if (debug)
                             printf(
@@ -1272,8 +1262,7 @@ void AdjustLengths() {
 
                 if (debug)
                     printf(
-                        "RULE: <VOWEL> <UNVOICED PLOSIVE> - decrease vowel by "
-                        "1/8th\n");
+                        "RULE: <VOWEL> <UNVOICED PLOSIVE> - decrease vowel by 1/8th\n");
                 if (debug) printf("PRE\n");
                 if (debug)
                     printf("phoneme %d (%c%c) length %d\n", R,
@@ -1303,8 +1292,7 @@ void AdjustLengths() {
 
             if (debug)
                 printf(
-                    "RULE: <VOWEL> <VOICED CONSONANT> - increase vowel by 1/2 "
-                    "+ 1\n");
+                    "RULE: <VOWEL> <VOICED CONSONANT> - increase vowel by 1/2 + 1\n");
             if (debug) printf("PRE\n");
             if (debug)
                 printf("phoneme %d (%c%c) length %d\n", R - 1,
@@ -1360,8 +1348,7 @@ void AdjustLengths() {
             {
                 if (debug)
                     printf(
-                        "RULE: <NASAL> <STOP CONSONANT> - set nasal = 5, "
-                        "consonant = 6\n");
+                        "RULE: <NASAL> <STOP CONSONANT> - set nasal = 5, consonant = 6\n");
                 if (debug) printf("POST\n");
                 if (debug)
                     printf("phoneme %d (%c%c) length %d\n", R,
@@ -1431,8 +1418,7 @@ void AdjustLengths() {
             // CONSONANT>
             if (debug)
                 printf(
-                    "RULE: <UNVOICED STOP CONSONANT> {optional silence} <STOP "
-                    "CONSONANT> - shorten both to 1/2 + 1\n");
+                    "RULE: <UNVOICED STOP CONSONANT> {optional silence} <STOP CONSONANT> - shorten both to 1/2 + 1\n");
             if (debug) printf("PRE\n");
             if (debug)
                 printf("phoneme %d (%c%c) length %d\n", R,
@@ -1489,8 +1475,7 @@ void AdjustLengths() {
 
                 if (debug)
                     printf(
-                        "RULE: <LIQUID CONSONANT> <DIPHTONG> - decrease by "
-                        "2\n");
+                        "RULE: <LIQUID CONSONANT> <DIPHTONG> - decrease by 2\n");
                 if (debug) printf("PRE\n");
                 if (debug)
                     printf("phoneme %d (%c%c) length %d\n", R,

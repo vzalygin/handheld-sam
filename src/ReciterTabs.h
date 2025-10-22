@@ -3,6 +3,8 @@
 
 #include <avr/pgmspace.h>
 
+#include "memmanagment.h"
+
 extern const unsigned char tab36376[] PROGMEM;
 
 extern const unsigned char rules[] PROGMEM;
