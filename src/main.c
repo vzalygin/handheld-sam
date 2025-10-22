@@ -75,7 +75,7 @@ int main() {
    unsigned char number;
 
    for(i=0; i<=255; ++i) input[i] = 0;
-   debug = 1;
+   debug = 0;
 
    printf("READY\n");
 
