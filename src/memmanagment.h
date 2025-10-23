@@ -4,10 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-// #define DATAMEM __attribute__ ((section (".data")))
-// #define NOINITMEM __attribute__ ((section (".noinit")))
-#define DATAMEM /*DATAMEM*/
-#define NOINITMEM /*NOINITMEM*/
+#define DATAMEM __attribute__ ((section (".data")))
+#define NOINITMEM __attribute__ ((section (".noinit")))
 
 #define printf(...) _PRINTF_IMPL(__VA_ARGS__)(__VA_ARGS__)
 #define _PRINTF_IMPL(...) _GET_MACRO(__VA_ARGS__, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1, _PRINTF_IMPL_1,  _PRINTF_IMPL_0)

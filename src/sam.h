@@ -7,6 +7,10 @@
 #include "reciter.h"
 #include "memmanagment.h"
 
+#define SAMPLE_RATE 22050
+
+extern 
+
 void SetInput(char *_input);
 void SetSpeed(unsigned char _speed);
 void SetPitch(unsigned char _pitch);
@@ -18,7 +22,7 @@ void EnableDebug();
 int SAMMain();
 
 char* GetBuffer();
-int GetBufferLength();
+unsigned int GetBufferLength();
 
 
 //char input[]={"/HAALAOAO MAYN NAAMAEAE IHSTT SAEBAASTTIHAAN \x9b\x9b\0"};

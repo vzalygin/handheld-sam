@@ -42,10 +42,10 @@ unsigned char trans(unsigned char mem39212, unsigned char mem39213);
 
 // timetable for more accurate c64 simulation
 int timetable[5][5] PROGMEM = {{162, 167, 167, 127, 128},
-                               {226, 60, 60, 0, 0},
-                               {225, 60, 59, 0, 0},
-                               {200, 0, 0, 54, 55},
-                               {199, 0, 0, 54, 54}};
+                       {226, 60, 60, 0, 0},
+                       {225, 60, 59, 0, 0},
+                       {200, 0, 0, 54, 55},
+                       {199, 0, 0, 54, 54}};
 
 static unsigned oldtimetableindex = 0;
 void Output8BitAry(int index, unsigned char ary[5]) {
@@ -56,10 +56,8 @@ void Output8BitAry(int index, unsigned char ary[5]) {
     for (k = 0; k < 5; k++) buffer[bufferpos / 50 + k] = ary[k];
 }
 void Output8Bit(int index, unsigned char A) {
-    printf("Output8Bit(index: %d, A: %hhu)\n", index, A);
     unsigned char ary[5] = {A, A, A, A, A};
     Output8BitAry(index, ary);
-    printf("Output8Bit return\n");
 }
 
 // written by me because of different table positions.
@@ -72,36 +70,28 @@ void Output8Bit(int index, unsigned char A) {
 //  173=amplitude2
 //  174=amplitude3
 unsigned char Read(unsigned char p, unsigned char Y) {
-    // printf("Read(p: %hhu, Y: %hhu, ", p, Y);
     unsigned char res;
     switch (p) {
         case 168:
             res = pitches[Y];
-            // printf("res: %hhu)\n", res);
             return res;
         case 169:
             res = frequency1[Y];
-            // printf("res: %hhu)\n", res);
             return res;
         case 170:
             res = frequency2[Y];
-            // printf("res: %hhu)\n", res);
             return res;
         case 171:
             res = frequency3[Y];
-            // printf("res: %hhu)\n", res);
             return res;
         case 172:
             res = amplitude1[Y];
-            // printf("res: %hhu)\n", res);
             return res;
         case 173:
             res = amplitude2[Y];
-            // printf("res: %hhu)\n", res);
             return res;
         case 174:
             res = amplitude3[Y];
-            // printf("res: %hhu)\n", res);
             return res;
     }
     printf("Error reading to tables");
@@ -109,7 +99,6 @@ unsigned char Read(unsigned char p, unsigned char Y) {
 }
 
 void Write(unsigned char p, unsigned char Y, unsigned char value) {
-    // printf("Write(p: %hhu, Y: %hhu, value: %hhu)\n", p, Y, value);
     switch (p) {
         case 168:
             pitches[Y] = value;
@@ -192,12 +181,9 @@ void Write(unsigned char p, unsigned char Y, unsigned char value) {
 
 // Code48227()
 void RenderSample(unsigned char* mem66) {
-    printf("RenderSample(mem66: %d)\n", mem66);
-    // printf("RenderSample(mem66: %d)\n", *mem66);
     int tempA;
     // current phoneme's index
     mem49 = Y;
-    // printf("mem49 = Y %hhu\n", mem49);
 
     // mask low three bits and subtract 1 get value to
     // convert 0 bits on unvoiced samples.
@@ -231,7 +217,6 @@ void RenderSample(unsigned char* mem66) {
 
     Y = A ^ 255;
 pos48274:
-    printf("pos48274\n");
 
     // step through the 8 bits in the sample
     mem56 = 8;
@@ -239,9 +224,7 @@ pos48274:
     // get the next sample from the table
     // mem47*256 = offset to start of samples
     A = pgm_read_byte(&sampleTable[mem47 * 256 + Y]);
-    printf("A = sampleTable[%d] %hhu\n", mem47 * 256 + Y, A);
 pos48280:
-    printf("pos48280\n");
 
     // left shift to get the high bit
     tempA = A;
@@ -264,7 +247,6 @@ pos48280:
 
     // 48295: NOP
 pos48296:
-    printf("pos48296\n");
 
     X = 0;
 
@@ -286,7 +268,6 @@ pos48296:
     unsigned char phase1;
 
 pos48315:
-    printf("pos48315\n");
     // handle voiced samples here
 
     // number of samples?
@@ -340,10 +321,9 @@ pos48315:
     mem44 = 1;
     *mem66 = Y;
     Y = mem49;
-    printf("RenderSample return\n");
     return;
 }
-
+ 
 // RENDER THE PHONEMES IN THE LIST
 //
 // The phoneme list is converted into sound through the steps:
@@ -433,15 +413,6 @@ void Render() {
                 sampledConsonantFlags[Y];  // phoneme data for sampled
                                            // consonants
             pitches[X] = pitch + phase1;   // pitch
-            // printf("frequency1[%hhu] = %hhu\n", X, frequency1[X]);
-            // printf("frequency2[%hhu] = %hhu\n", X, frequency2[X]);
-            // printf("frequency3[%hhu] = %hhu\n", X, frequency3[X]);
-            // printf("amplitude1[%hhu] = %hhu\n", X, amplitude1[X]);
-            // printf("amplitude2[%hhu] = %hhu\n", X, amplitude2[X]);
-            // printf("amplitude3[%hhu] = %hhu\n", X, amplitude3[X]);
-            // printf("sampledConsonantFlag[%hhu] = %hhu\n", X,
-            //        sampledConsonantFlag[X]);
-            // printf("pitches[%hhu] = %hhu\n", X, pitches[X]);
             X++;
             phase2--;
         } while (phase2 != 0);
@@ -702,7 +673,6 @@ void Render() {
                 while (1)  // while No. 3
                 {
                     A = Read(mem47, Y) + mem53;  // carry alway cleared
-                    // printf("A=%hhu, mem53=%hhu\n", A, mem53);
 
                     mem48 = A;
                     Y++;
@@ -768,6 +738,7 @@ void Render() {
     //
 
     // amplitude rescaling
+    if (debug) printf("amplitude rescaling\n");
     for (i = 255; i >= 0; i--) {
         amplitude1[i] = pgm_read_byte(&amplitudeRescale[amplitude1[i]]);
         amplitude2[i] = pgm_read_byte(&amplitudeRescale[amplitude2[i]]);
@@ -785,7 +756,7 @@ void Render() {
                     amplitude1, amplitude2, amplitude3, pitches);
     }
 
-    printf("process the frames\n");
+    if (debug) printf("process the frames\n");
 
     // PROCESS THE FRAMES
     //
@@ -851,7 +822,10 @@ void Render() {
         }
 
         // if the frame count is zero, exit the loop
-        if (mem48 == 0) return;
+        if (mem48 == 0) {
+            printf("OUTPUT READY\n");
+            return;
+        }
         speedcounter = speed;
     pos48155:
 
@@ -890,6 +864,7 @@ void Render() {
         // voiced sampled phonemes interleave the sample with the
         // glottal pulse. The sample flag is non-zero, so render
         // the sample for the phoneme.
+        printf("2 RenderSample(mem66: %hhu)\n", mem66);
         RenderSample(&mem66);
         goto pos48159;
     }  // while
@@ -939,7 +914,7 @@ void Render() {
     mem44 = 1;
     mem66 = Y;
     Y = mem49;
-    if (debug) printf("output ready\n");
+    printf("OUTPUT READY\n");
     return;
 }
 

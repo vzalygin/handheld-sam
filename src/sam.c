@@ -59,9 +59,9 @@ void SetMouth(unsigned char _mouth) { mouth = _mouth; }
 void SetThroat(unsigned char _throat) { throat = _throat; }
 void EnableSingmode() { singmode = 1; }
 char *GetBuffer() { return buffer; }
-int GetBufferLength() { return bufferpos; }
+unsigned int GetBufferLength() { return bufferpos; }
 
-void Init();
+int Init();
 int Parser1();
 void Parser2();
 int SAMMain();
@@ -83,14 +83,18 @@ void SetMouthThroat(unsigned char mouth, unsigned char throat);
 // 173=amplitude2
 // 174=amplitude3
 
-void Init() {
+int Init() {
     int i;
     SetMouthThroat(mouth, throat);
 
     bufferpos = 0;
     // TODO, check for free the memory, 10 seconds of output should be more than
     // enough Max HEAP size is ~59KB, so 22050*1 = ~21.5KB
-    buffer = malloc(22050 * 1u);
+    buffer = malloc(SAMPLE_RATE * 1u);
+    if (buffer == NULL) {
+        printf("Cannot alloc memory for buffer :(\n");
+        return 1;
+    }
 
     /*
     freq2data = &mem[45136];
@@ -127,11 +131,14 @@ void Init() {
     }
     phonemeindex[255] = 255;  // to prevent buffer overflow // ML : changed from
                               // 32 to 255 to stop freezing with long inputs
+    return 0;
 }
 
 // int Code39771()
 int SAMMain() {
-    Init();
+    if(Init()) {
+        return 1;
+    }
     phonemeindex[255] = 32;  // to prevent buffer overflow
 
     if (!Parser1()) return 0;
@@ -162,7 +169,7 @@ int SAMMain() {
 
     PrepareOutput();
 
-    free(buffer);
+    // free(buffer);
     return 1;
 }
 
@@ -399,10 +406,6 @@ int Parser1() {
 
     // CLEAR THE STRESS TABLE
     for (i = 0; i < 256; i++) stress[i] = 0;
-    printf("parser input:\n");
-    for (i = 0; i <= strlen(input); ++i)
-        printf("%hhu ", input[i]);
-    printf("\n");
     // THIS CODE MATCHES THE PHONEME LETTERS TO THE TABLE
     // pos41078:
     while (1) {
@@ -589,7 +592,6 @@ void Code41240() {
 
 // void Code41397()
 void Parser2() {
-    if (debug) printf("Parser2\n");
     unsigned char pos = 0;  // mem66;
     unsigned char mem58 = 0;
 

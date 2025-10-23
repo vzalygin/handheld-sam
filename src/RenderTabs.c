@@ -84,7 +84,7 @@ const unsigned char inBlendLength[] PROGMEM =
 // 67: **    27          00011011
 // 70: **    25          00011001
 // tab45936
-const unsigned char sampledConsonantFlags[] PROGMEM =
+unsigned char sampledConsonantFlags[] DATAMEM =
 {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,

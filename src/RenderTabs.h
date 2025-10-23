@@ -17,7 +17,7 @@ extern const unsigned char outBlendLength[] PROGMEM;
 
 extern const unsigned char inBlendLength[] PROGMEM;
 
-extern const unsigned char sampledConsonantFlags[] PROGMEM;
+extern unsigned char sampledConsonantFlags[] DATAMEM;
 
 extern unsigned char freq1data[] DATAMEM;
 

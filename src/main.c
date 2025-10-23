@@ -1,5 +1,5 @@
-// #include <avr/io.h>
-// #include <avr/interrupt.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include <inttypes.h>
 #include <ctype.h>
@@ -12,31 +12,61 @@
 
 extern int debug;
 
-// // ������������ ���� �������� �������
-// // ������������ ���� C
-// // ��������� ������� ������ (�������� XMEM)
-// void init_xmem() {
-//    XMCRA = 0;
-//    XMCRB = 0;
-//    MCUCR = (1<<SRE);
-// }
+static char * speaker_buffer;
+static unsigned int speaker_buffer_length;
+static unsigned int speaker_buffer_index;
 
-// void init_uart() {
-//    UBRR0L = 51; // 9600 ��� �� 8 ���
-//    UCSR0B = (1<<TXEN) | (1<<RXEN);
-//    UCSR0C = (3<<UCSZ00);
+ISR(TIMER1_COMPA_vect) {
+   OCR0 = speaker_buffer[speaker_buffer_index++]; // Отправляем в PWM регистр (8-бит)
+   PORTD ^= (1 << PD0);
 
-//    stdout = &uart_stdout;
-//    stdin = &uart_stdin;
-// }
+   if (speaker_buffer_index >= speaker_buffer_length) {
+      TIMSK = (0 << OCIE1A); // disable int
+      PORTD |= (1 << PD0);
+      printf("said\n");
+   }
+   sei();
+}
 
-// void init_io() {
-//    DDRB = 0b11111111;     // ��������� PA ��� �����   
-//    PORTB = 0b10101010;
-// }
+// ������������ ���� �������� �������
+// ������������ ���� C
+// ��������� ������� ������ (�������� XMEM)
+void init_xmem() {
+   XMCRA = 0;
+   XMCRB = 0;
+   MCUCR = (1<<SRE);
+}
+
+void init_uart() {
+   UBRR0L = 51; // 9600 ��� �� 8 ���
+   UCSR0B = (1<<TXEN) | (1<<RXEN);
+   UCSR0C = (3<<UCSZ00);
+
+   stdout = &uart_stdout;
+   stdin = &uart_stdin;
+}
+
+void init_io() {
+   DDRD |= (1 << PD0);
+   PORTD |= (1 << PD0);
+}
+
+void init_pwm() { // timer 0
+   DDRB |= (1 << PB4); // OC0 (PWM)
+   // Fast PWM, non-inverting, prescaler = 1
+   OCR0 = 0;
+   TCCR0 = (1 << WGM00) | (1 << WGM01) | (1 << COM01) | (1 << CS00);
+}
+
+void init_timer(void) { // timer 1
+   TCCR1B = (1 << WGM12) | (1 << CS10); // CTC mode, prescaler=1
+   OCR1A = 361; // (F_CPU / SAMPLE_RATE) - 1;   // timer period
+   TIMSK |= (0 << OCIE1A);              // disable int
+}
 
 void say(char * input, int phonetic) {
    strncat(input, " ", 255);
+   printf("input: %s\n", input);
    int i;
    for(i=0; input[i] != 0; i++) input[i] = toupper((int)input[i]);
    if (debug) {
@@ -63,32 +93,46 @@ void say(char * input, int phonetic) {
    if (!SAMMain()) {
       print_usage();
    }
+
+   speaker_buffer = GetBuffer();
+   speaker_buffer_length = GetBufferLength() / 50;
+   //speaker_buffer_length = speaker_buffer_length / 50;
+   speaker_buffer_index = 0;
+   PORTD = (0 << PD0);
+   TIMSK |= (1 << OCIE1A); // enable int
 }
 
 int main() {
-   // init_xmem();
-   // init_uart();
-   // init_io();
+   unsigned char number;
+   int phonetic = 0;
    char input[256];
    int i;
-   int phonetic = 0;
-   unsigned char number;
-
    for(i=0; i<=255; ++i) input[i] = 0;
    debug = 0;
+   init_xmem();
+   init_uart();
+   init_io();
+   init_pwm();
+   init_timer();
+   printf("READY\n> ");
+   sei();
 
-   printf("READY\n");
-
-   while(1) {
-      printf("> ");
+   strncpy(input, "hello", 255);
+   say(input, phonetic);
+   /*while(1) {
       scanf("%255s", input);
       if (input[0] != '-') {
 	 say(input, phonetic);
       } else if (strcmp(input, "-help") == 0) {
 	 print_usage();
       } else if (strcmp(input, "-debug") == 0) {
-	 debug = 1;
-	 printf("debug enabled\n");
+	 if (!debug) {
+	    debug = 1;
+	    printf("debug enabled\n");
+	 } else {
+	    debug = 0;
+	    printf("debug disabled\n");
+	 }
       } else if (strcmp(input, "-pitch") == 0) {
 	 scanf("%hhu", &number);
 	 SetPitch(number);
@@ -100,7 +144,8 @@ int main() {
       } else {
 	 printf("unknown command %s\n", input);
       }
-   }
+      printf("> ");
+   }*/
 
    return 0;
 }
