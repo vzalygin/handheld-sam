@@ -1,18 +1,18 @@
 #include "uart.h"
 
 int uart_putchar(char c, FILE * stream) {
-   while(!(UCSR0A & 1 << UDRE));
+   while(!(UCSR1A & 1 << UDRE1));
    if (c == '\n') {
-      UDR0 = '\r';
+      UDR1 = '\r';
    } else {
-      UDR0 = c;
+      UDR1 = c;
    }
    return 0;
 }
 
 int uart_getchar(FILE *stream) {
-    while (!(UCSR0A & 1 << RXC0));
-    return UDR0;
+    while (!(UCSR1A & 1 << RXC1));
+    return UDR1;
 }
 
 FILE uart_stdout = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);

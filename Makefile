@@ -5,8 +5,8 @@
 ## General Flags
 PROJECT=handheld-sam
 MCU=atmega128a
+MCU_SHORT=m128
 F_CPU=8000000UL
-TARGET=handheld-sam.elf
 
 #Dirs
 BUILDDIR=build
@@ -14,15 +14,13 @@ SRCDIR=src
 INCLUDEDIR=include
 
 # Source files
-SOURCES=$(SRCDIR)/main.c
+SOURCES=$(SRCDIR)/debug_sam.c $(SRCDIR)/main.c $(SRCDIR)/reciter.c $(SRCDIR)/ReciterTabs.c $(SRCDIR)/render.c $(SRCDIR)/RenderTabs.c $(SRCDIR)/sam.c $(SRCDIR)/SamTabs.c $(SRCDIR)/uart.c 
 
 # Objects and deps
 TARGET=$(BUILDDIR)/$(PROJECT).elf
+TARGET_HEX=$(BUILDDIR)/$(PROJECT).hex
 OBJECTS=$(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
 DEPS=$(OBJECTS:.o=.d)
-
-## Explicit user objects
-LINKONLYOBJECTS =
 
 ## Compilers
 CC =avr-gcc
@@ -70,7 +68,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 
 ## Link
 $(TARGET): $(OBJECTS)
-	$(CC) $(LDFLAGS) -Wl,-Map,$(TARGET:.elf=.map) $(OBJECTS) $(LINKONLYOBJECTS) $(LIBDIRS) $(LIBS) -o $@
+	$(CC) $(LDFLAGS) -Wl,-Map,$(TARGET:.elf=.map) $(OBJECTS) $(LIBDIRS) $(LIBS) -o $@
 
 ## Make HEX
 $(BUILDDIR)/%.hex: $(BUILDDIR)/%.elf
@@ -87,6 +85,9 @@ $(BUILDDIR)/%.lss: $(BUILDDIR)/%.elf
 size: $(TARGET)
 	@echo
 	@avr-size -C --mcu=${MCU} ${TARGET}
+
+flash: all
+	avrdude -c usbasp -p $(MCU_SHORT) -U flash:w:$(TARGET_HEX):i
 
 ## Clean
 .PHONY: clean

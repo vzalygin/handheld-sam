@@ -38,17 +38,21 @@ void init_xmem() {
 }
 
 void init_uart() {
-   UBRR0L = 51; // 9600 ��� �� 8 ���
-   UCSR0B = (1<<TXEN) | (1<<RXEN);
-   UCSR0C = (3<<UCSZ00);
+   // Скорость
+   UBRR1H = (uint8_t)(UBRR1_VALUE >> 8);
+   UBRR1L = (uint8_t)(UBRR1_VALUE & 0xFF);
 
-   stdout = &uart_stdout;
-   stdin = &uart_stdin;
+   // Режим 8N1: 8 бит данных, без четности, 1 стоп-бит
+   UCSR1C = (1 << UCSZ11) | (1 << UCSZ10);
+
+   // Включаем приемник и передатчик
+   UCSR1B = (1 << RXEN1) | (1 << TXEN1);
 }
 
 void init_io() {
    DDRD |= (1 << PD0);
    PORTD |= (1 << PD0);
+   DDRA |= (1 << PA0);
 }
 
 void init_pwm() { // timer 0
@@ -114,11 +118,18 @@ int main() {
    init_io();
    init_pwm();
    init_timer();
-   printf("READY\n> ");
+   // printf("READY\n> ");
    sei();
 
-   strncpy(input, "hello", 255);
-   say(input, phonetic);
+   for (;;)
+   {
+      // uint8_t b;  
+      // scanf("%c", &b);
+      printf("hello");
+   }
+
+   // strncpy(input, "hello", 255);
+   // say(input, phonetic);
    /*while(1) {
       scanf("%255s", input);
       if (input[0] != '-') {
