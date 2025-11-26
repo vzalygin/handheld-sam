@@ -39,8 +39,7 @@ void init_xmem() {
 
 void init_uart() {
    // Скорость
-   UBRR1H = (uint8_t)(UBRR1_VALUE >> 8);
-   UBRR1L = (uint8_t)(UBRR1_VALUE & 0xFF);
+   UBRR1L = 51; // 9600
 
    // Режим 8N1: 8 бит данных, без четности, 1 стоп-бит
    UCSR1C = (1 << UCSZ11) | (1 << UCSZ10);
