@@ -1,5 +1,3 @@
-#include <avr/pgmspace.h>
-
 #include "ReciterTabs.h"
 
 //some flags

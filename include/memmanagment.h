@@ -1,6 +1,8 @@
 #ifndef MEMMANAGMENT_H
 #define MEMMANAGMENT_H
 
+#include <avr/pgmspace.h>
+
 #include <stdio.h>
 #include <string.h>
 

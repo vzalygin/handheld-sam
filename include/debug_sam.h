@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <avr/pgmspace.h>
 
 #include "SamTabs.h"
 #include "memmanagment.h"

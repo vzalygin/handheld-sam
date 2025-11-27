@@ -1,8 +1,6 @@
 #ifndef RENDERTABS_H
 #define RENDERTABS_H
 
-#include <avr/pgmspace.h>
-
 #include "memmanagment.h"
 
 extern const unsigned char tab48426[5] PROGMEM;

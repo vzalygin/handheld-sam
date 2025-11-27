@@ -1,8 +1,6 @@
 #ifndef RECITERTABS_H
 #define RECITERTABS_H
 
-#include <avr/pgmspace.h>
-
 #include "memmanagment.h"
 
 extern const unsigned char tab36376[] PROGMEM;

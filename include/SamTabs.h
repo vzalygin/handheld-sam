@@ -1,8 +1,6 @@
 #ifndef SAMTABS_H
 #define SAMTABS_H
 
-#include <avr/pgmspace.h>
-
 #include "memmanagment.h"
 
 extern const unsigned char stressInputTable[] PROGMEM;
