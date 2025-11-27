@@ -14,7 +14,7 @@ SRCDIR=src
 INCLUDEDIR=include
 
 # Source files
-SOURCES=$(SRCDIR)/debug_sam.c $(SRCDIR)/main.c $(SRCDIR)/reciter.c $(SRCDIR)/ReciterTabs.c $(SRCDIR)/render.c $(SRCDIR)/RenderTabs.c $(SRCDIR)/sam.c $(SRCDIR)/SamTabs.c $(SRCDIR)/uart.c 
+SOURCES=$(SRCDIR)/debug_sam.c $(SRCDIR)/main.c $(SRCDIR)/memmanagment.c $(SRCDIR)/reciter.c $(SRCDIR)/ReciterTabs.c $(SRCDIR)/render.c $(SRCDIR)/RenderTabs.c $(SRCDIR)/sam.c $(SRCDIR)/SamTabs.c $(SRCDIR)/uart.c
 
 # Objects and deps
 TARGET=$(BUILDDIR)/$(PROJECT).elf
