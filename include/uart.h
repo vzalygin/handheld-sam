@@ -11,7 +11,9 @@
 
 #include "memmanagment.h"
 
-extern FILE uart_stdout;
-extern FILE uart_stdin;
+int uart_putchar(char c, FILE * stream);
+int uart_getchar(FILE *stream);
+
+void uart_print(char * str);
 
 #endif

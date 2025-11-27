@@ -864,7 +864,7 @@ void Render() {
         // voiced sampled phonemes interleave the sample with the
         // glottal pulse. The sample flag is non-zero, so render
         // the sample for the phoneme.
-        printf("2 RenderSample(mem66: %hhu)\n", mem66);
+        // printf("2 RenderSample(mem66: %hhu)\n", mem66);
         RenderSample(&mem66);
         goto pos48159;
     }  // while

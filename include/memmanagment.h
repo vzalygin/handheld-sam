@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "uart.h"
+
 #define DATAMEM __attribute__((section(".data")))
 #define NOINITMEM __attribute__((section(".noinit")))
 

@@ -1,11 +1,11 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "debug_sam.h"
-#include "memmanagment.h"
-
 #include <inttypes.h>
 #include <stdio.h>
+
+#include "debug_sam.h"
+#include "memmanagment.h"
 
 static void print_usage() {
     printf("     VOWELS                            VOICED CONSONANTS    \n");
