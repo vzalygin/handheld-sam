@@ -1,15 +1,15 @@
 #include "debug_sam.h"
 
-int debug 		DATAMEM = 0;
-char printf_buffer[256] NOINITMEM;
+int debug DATAMEM = 0;
+char PRINTF_FMT_BUFFER[256] NOINITMEM;
 
-const char * copy_pgm_str(const char * pgm_str) {
-    strcpy_P(printf_buffer, pgm_str);
-    return printf_buffer;
+const char* copy_pgm_str(const char* pgm_str) {
+    strcpy_P(PRINTF_FMT_BUFFER, pgm_str);
+    return PRINTF_FMT_BUFFER;
 }
 
-void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, unsigned char *stress)
-{
+void PrintPhonemes(unsigned char* phonemeindex, unsigned char* phonemeLength,
+                   unsigned char* stress) {
     int i = 0;
     printf("===========================================\n");
 
@@ -17,20 +17,15 @@ void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, un
     printf(" idx    phoneme  length  stress\n");
     printf("------------------------------\n");
 
-    while((phonemeindex[i] != 255) && (i < 255))
-    {
-        if (phonemeindex[i] < 81)
-        {
-            printf(" %3i      %c%c      %3i       %i\n",
-            phonemeindex[i],
-            pgm_read_byte(&signInputTable1[phonemeindex[i]]),
-            pgm_read_byte(&signInputTable2[phonemeindex[i]]),
-            phonemeLength[i],
-            stress[i]
-            );
-        } else
-        {
-            printf(" %3i      ??      %3i       %i\n", phonemeindex[i], phonemeLength[i], stress[i]);
+    while ((phonemeindex[i] != 255) && (i < 255)) {
+        if (phonemeindex[i] < 81) {
+            printf(" %3i      %c%c      %3i       %i\n", phonemeindex[i],
+                   pgm_read_byte(&signInputTable1[phonemeindex[i]]),
+                   pgm_read_byte(&signInputTable2[phonemeindex[i]]),
+                   phonemeLength[i], stress[i]);
+        } else {
+            printf(" %3i      ??      %3i       %i\n", phonemeindex[i],
+                   phonemeLength[i], stress[i]);
         }
         i++;
     }
@@ -38,42 +33,35 @@ void PrintPhonemes(unsigned char *phonemeindex, unsigned char *phonemeLength, un
     printf("\n");
 }
 
-void PrintOutput(
-    unsigned char *flag,
-    unsigned char *f1,
-    unsigned char *f2,
-    unsigned char *f3,
-    unsigned char *a1,
-    unsigned char *a2,
-    unsigned char *a3,
-    unsigned char *p)
-{
+void PrintOutput(unsigned char* flag, unsigned char* f1, unsigned char* f2,
+                 unsigned char* f3, unsigned char* a1, unsigned char* a2,
+                 unsigned char* a3, unsigned char* p) {
     printf("===========================================\n");
     printf("Final data for speech output:\n\n");
     int i = 0;
     printf(" flags ampl1 freq1 ampl2 freq2 ampl3 freq3 pitch\n");
     printf("------------------------------------------------\n");
-    while(i < 255)
-    {
-        printf("%5i %5i %5i %5i %5i %5i %5i %5i\n", flag[i], a1[i], f1[i], a2[i], f2[i], a3[i], f3[i], p[i]);
+    while (i < 255) {
+        printf("%5i %5i %5i %5i %5i %5i %5i %5i\n", flag[i], a1[i], f1[i],
+               a2[i], f2[i], a3[i], f3[i], p[i]);
         i++;
     }
     printf("===========================================\n");
-
 }
 
 extern unsigned char GetRuleByte(unsigned short mem62, unsigned char Y);
 
-void PrintRule(int offset)
-{
+void PrintRule(int offset) {
     int i = 1;
     unsigned char A = 0;
     printf("Applying rule: ");
-    do
-    {
+    do {
         A = GetRuleByte(offset, i);
-        if ((A&127) == '=') printf(" -> "); else printf("%c", A&127);
+        if ((A & 127) == '=')
+            printf(" -> ");
+        else
+            printf("%c", A & 127);
         i++;
-    } while ((A&128)==0);
+    } while ((A & 128) == 0);
     printf("\n");
 }
