@@ -27,7 +27,7 @@
         printf(copy_pgm_str(MSG), __VA_ARGS__); \
     } while (0)
 
-extern char PRINTF_FMT_BUFFER[256] NOINITMEM;
+extern char COPY_PGM_BUFFER[256] NOINITMEM;
 const char* copy_pgm_str(const char* pgm_str);
 
 #endif

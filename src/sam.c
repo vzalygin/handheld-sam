@@ -25,7 +25,7 @@ unsigned char mem56 NOINITMEM;
 
 unsigned char mem59 DATAMEM = 0;
 
-unsigned char B NOINITMEM; 
+unsigned char B NOINITMEM;
 unsigned char R NOINITMEM;
 unsigned char S NOINITMEM;
 
@@ -38,15 +38,16 @@ unsigned char stressOutput[60] NOINITMEM;         // tab47365
 unsigned char phonemeLengthOutput[60] NOINITMEM;  // tab47416
 
 // contains the final soundbuffer
-int bufferpos DATAMEM = 0;
-char *buffer DATAMEM = NULL;
+uint32_t bufferpos DATAMEM = 0;
+char* buffer DATAMEM = NULL;
 
-void SetInput(char *_input) {
+void SetInput(char* _input) {
     int i, l;
-    printf("set input:\n");
-    for (i = 0; i <= strlen(_input); ++i)
-        printf("%hhu ", _input[i]);
-    printf("\n");
+    if (debug) {
+        printf("set input:\n");
+        for (i = 0; i <= strlen(_input); ++i) printf("%hhu ", _input[i]);
+        printf("\n");
+    }
     l = strlen(_input);
     if (l > 254) l = 254;
     for (i = 0; i < l; i++) input[i] = _input[i];
@@ -58,8 +59,8 @@ void SetPitch(unsigned char _pitch) { pitch = _pitch; }
 void SetMouth(unsigned char _mouth) { mouth = _mouth; }
 void SetThroat(unsigned char _throat) { throat = _throat; }
 void EnableSingmode() { singmode = 1; }
-char *GetBuffer() { return buffer; }
-unsigned int GetBufferLength() { return bufferpos; }
+char* GetBuffer() { return buffer; }
+uint32_t GetBufferLength() { return bufferpos; }
 
 int Init();
 int Parser1();
@@ -136,7 +137,7 @@ int Init() {
 
 // int Code39771()
 int SAMMain() {
-    if(Init()) {
+    if (Init()) {
         return 1;
     }
     phonemeindex[255] = 32;  // to prevent buffer overflow
@@ -523,8 +524,8 @@ void SetPhonemeLength() {
             phonemeLength[position] =
                 pgm_read_byte(&phonemeLengthTable[phonemeindex[position]]);
         } else {
-            phonemeLength[position] =
-                pgm_read_byte(&phonemeStressedLengthTable[phonemeindex[position]]);
+            phonemeLength[position] = pgm_read_byte(
+                &phonemeStressedLengthTable[phonemeindex[position]]);
         }
         position++;
     }
@@ -540,12 +541,11 @@ void Code41240() {
         if ((pgm_read_byte(&sam_flags[index]) & 2) == 0) {
             pos++;
             continue;
-        } else if ((pgm_read_byte(&sam_flags[index]) & 1) ==
-                   0) {
-            Insert(pos + 1, index + 1, pgm_read_byte(&phonemeLengthTable[index + 1]),
-                   stress[pos]);
-            Insert(pos + 2, index + 2, pgm_read_byte(&phonemeLengthTable[index + 2]),
-                   stress[pos]);
+        } else if ((pgm_read_byte(&sam_flags[index]) & 1) == 0) {
+            Insert(pos + 1, index + 1,
+                   pgm_read_byte(&phonemeLengthTable[index + 1]), stress[pos]);
+            Insert(pos + 2, index + 2,
+                   pgm_read_byte(&phonemeLengthTable[index + 2]), stress[pos]);
             pos += 3;
             continue;
         }
@@ -566,8 +566,10 @@ void Code41240() {
             }  // '/H' '/X'
         }
 
-        Insert(pos + 1, index + 1, pgm_read_byte(&phonemeLengthTable[index + 1]), stress[pos]);
-        Insert(pos + 2, index + 2, pgm_read_byte(&phonemeLengthTable[index + 2]), stress[pos]);
+        Insert(pos + 1, index + 1,
+               pgm_read_byte(&phonemeLengthTable[index + 1]), stress[pos]);
+        Insert(pos + 2, index + 2,
+               pgm_read_byte(&phonemeLengthTable[index + 2]), stress[pos]);
         pos += 3;
     };
 }
@@ -604,7 +606,8 @@ void Parser2() {
 
         // DEBUG: Print phoneme and index
         if (debug && B != 255)
-            printf("%d: %c%c\n", R, pgm_read_byte(&signInputTable1[B]), pgm_read_byte(&signInputTable2[B]));
+            printf("%d: %c%c\n", R, pgm_read_byte(&signInputTable1[B]),
+                   pgm_read_byte(&signInputTable2[B]));
 
         // Is phoneme pause?
         if (B == 0) {
@@ -626,8 +629,7 @@ void Parser2() {
         // Example: OIL, COW
 
         // Check for DIPHTONG
-        if ((pgm_read_byte(&sam_flags[B]) & 16) == 0)
-            goto pos41457;
+        if ((pgm_read_byte(&sam_flags[B]) & 16) == 0) goto pos41457;
 
         // Not a diphthong. Get the stress
         mem58 = stress[pos];
@@ -646,7 +648,8 @@ void Parser2() {
         if (debug)
             if (B == 20)
                 printf(
-                    "RULE: insert WX following diphtong NOT ending in IY sound\n");
+                    "RULE: insert WX following diphtong NOT ending in IY "
+                    "sound\n");
         if (debug)
             if (B == 21)
                 printf(
@@ -751,7 +754,10 @@ void Parser2() {
                         if (B != 0) {
                             // Insert a glottal stop and move forward
                             if (debug)
-                                printf("RULE: Insert glottal stop between two stressed vowels with space between them\n");
+                                printf(
+                                    "RULE: Insert glottal stop between two "
+                                    "stressed vowels with space between "
+                                    "them\n");
                             // 31 = 'Q'
                             Insert(R, 31, mem59, 0);
                             pos++;
@@ -874,7 +880,8 @@ void Parser2() {
                 if (debug)
                     if (B == 0)
                         printf(
-                            "RULE: K <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> KX <VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
+                            "RULE: K <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> "
+                            "KX <VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
                 // Replace with KX
                 if (B == 0) phonemeindex[pos] = 75;  // 'KX'
             }
@@ -906,7 +913,8 @@ void Parser2() {
                 // replace G with GX and continue processing next phoneme
                 if (debug)
                     printf(
-                        "RULE: G <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> GX <VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
+                        "RULE: G <VOWEL OR DIPHTONG NOT ENDING WITH IY> -> GX "
+                        "<VOWEL OR DIPHTONG NOT ENDING WITH IY>\n");
                 phonemeindex[pos] = 63;  // 'GX'
                 pos++;
                 continue;
@@ -1040,7 +1048,8 @@ void Parser2() {
             //  Set phonemes to DX
             if (debug)
                 printf(
-                    "RULE: Soften T or D following vowel or ER and preceding a pause -> DX\n");
+                    "RULE: Soften T or D following vowel or ER and preceding a "
+                    "pause -> DX\n");
             phonemeindex[pos] = 30;  // 'DX'
         } else {
             B = phonemeindex[R + 1];
@@ -1052,7 +1061,8 @@ void Parser2() {
             if (debug)
                 if (B != 0)
                     printf(
-                        "RULE: Soften T or D following vowel or ER and preceding a pause -> DX\n");
+                        "RULE: Soften T or D following vowel or ER and "
+                        "preceding a pause -> DX\n");
             if (B != 0) phonemeindex[pos] = 30;  // 'DX'
         }
 
@@ -1140,7 +1150,8 @@ void AdjustLengths() {
                     B = (B >> 1) + B + 1;
                     if (debug)
                         printf(
-                            "RULE: Lengthen <FRICATIVE> or <VOICED> between <VOWEL> and <PUNCTUATION> by 1.5\n");
+                            "RULE: Lengthen <FRICATIVE> or <VOICED> between "
+                            "<VOWEL> and <PUNCTUATION> by 1.5\n");
                     if (debug) printf("PRE\n");
                     if (debug)
                         printf("phoneme %d (%c%c) length %d\n", R,
@@ -1206,7 +1217,8 @@ void AdjustLengths() {
 
                         if (debug)
                             printf(
-                                "RULE: <VOWEL> <RX | LX> <CONSONANT> - decrease length by 1\n");
+                                "RULE: <VOWEL> <RX | LX> <CONSONANT> - "
+                                "decrease length by 1\n");
                         if (debug) printf("PRE\n");
                         if (debug)
                             printf(
@@ -1264,7 +1276,8 @@ void AdjustLengths() {
 
                 if (debug)
                     printf(
-                        "RULE: <VOWEL> <UNVOICED PLOSIVE> - decrease vowel by 1/8th\n");
+                        "RULE: <VOWEL> <UNVOICED PLOSIVE> - decrease vowel by "
+                        "1/8th\n");
                 if (debug) printf("PRE\n");
                 if (debug)
                     printf("phoneme %d (%c%c) length %d\n", R,
@@ -1294,7 +1307,8 @@ void AdjustLengths() {
 
             if (debug)
                 printf(
-                    "RULE: <VOWEL> <VOICED CONSONANT> - increase vowel by 1/2 + 1\n");
+                    "RULE: <VOWEL> <VOICED CONSONANT> - increase vowel by 1/2 "
+                    "+ 1\n");
             if (debug) printf("PRE\n");
             if (debug)
                 printf("phoneme %d (%c%c) length %d\n", R - 1,
@@ -1350,7 +1364,8 @@ void AdjustLengths() {
             {
                 if (debug)
                     printf(
-                        "RULE: <NASAL> <STOP CONSONANT> - set nasal = 5, consonant = 6\n");
+                        "RULE: <NASAL> <STOP CONSONANT> - set nasal = 5, "
+                        "consonant = 6\n");
                 if (debug) printf("POST\n");
                 if (debug)
                     printf("phoneme %d (%c%c) length %d\n", R,
@@ -1420,7 +1435,8 @@ void AdjustLengths() {
             // CONSONANT>
             if (debug)
                 printf(
-                    "RULE: <UNVOICED STOP CONSONANT> {optional silence} <STOP CONSONANT> - shorten both to 1/2 + 1\n");
+                    "RULE: <UNVOICED STOP CONSONANT> {optional silence} <STOP "
+                    "CONSONANT> - shorten both to 1/2 + 1\n");
             if (debug) printf("PRE\n");
             if (debug)
                 printf("phoneme %d (%c%c) length %d\n", R,
@@ -1477,7 +1493,8 @@ void AdjustLengths() {
 
                 if (debug)
                     printf(
-                        "RULE: <LIQUID CONSONANT> <DIPHTONG> - decrease by 2\n");
+                        "RULE: <LIQUID CONSONANT> <DIPHTONG> - decrease by "
+                        "2\n");
                 if (debug) printf("PRE\n");
                 if (debug)
                     printf("phoneme %d (%c%c) length %d\n", R,

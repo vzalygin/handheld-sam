@@ -22,7 +22,7 @@ extern unsigned char stressOutput[60];         // tab47365
 extern unsigned char phonemeLengthOutput[60];  // tab47416
 
 // contains the final soundbuffer
-extern int bufferpos;
+extern uint32_t bufferpos;
 extern char* buffer;
 
 unsigned char pitches[256];  // tab43008
@@ -42,10 +42,10 @@ unsigned char trans(unsigned char mem39212, unsigned char mem39213);
 
 // timetable for more accurate c64 simulation
 int timetable[5][5] PROGMEM = {{162, 167, 167, 127, 128},
-                       {226, 60, 60, 0, 0},
-                       {225, 60, 59, 0, 0},
-                       {200, 0, 0, 54, 55},
-                       {199, 0, 0, 54, 54}};
+                               {226, 60, 60, 0, 0},
+                               {225, 60, 59, 0, 0},
+                               {200, 0, 0, 54, 55},
+                               {199, 0, 0, 54, 54}};
 
 static unsigned oldtimetableindex = 0;
 void Output8BitAry(int index, unsigned char ary[5]) {
@@ -323,7 +323,7 @@ pos48315:
     Y = mem49;
     return;
 }
- 
+
 // RENDER THE PHONEMES IN THE LIST
 //
 // The phoneme list is converted into sound through the steps:
@@ -823,7 +823,7 @@ void Render() {
 
         // if the frame count is zero, exit the loop
         if (mem48 == 0) {
-            printf("OUTPUT READY\n");
+            if (debug) printf("OUTPUT READY\n");
             return;
         }
         speedcounter = speed;
@@ -914,7 +914,7 @@ void Render() {
     mem44 = 1;
     mem66 = Y;
     Y = mem49;
-    printf("OUTPUT READY\n");
+    if (debug) printf("OUTPUT READY NEVER REACHED???\n");
     return;
 }
 

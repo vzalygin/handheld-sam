@@ -22,7 +22,7 @@ void EnableDebug();
 int SAMMain();
 
 char* GetBuffer();
-unsigned int GetBufferLength();
+uint32_t GetBufferLength();
 
 
 //char input[]={"/HAALAOAO MAYN NAAMAEAE IHSTT SAEBAASTTIHAAN \x9b\x9b\0"};

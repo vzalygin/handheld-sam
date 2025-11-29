@@ -1,38 +1,19 @@
-#include <avr/interrupt.h>
-#include <avr/io.h>
 #include <ctype.h>
-#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "help.h"
+#include "player.h"
 #include "sam.h"
 #include "uart.h"
 
-#define BAUD 9600UL
-#define UBRR1_VALUE ((F_CPU / (16UL * BAUD)) - 1)
+#define BAUD_RATE 9600UL
+#define UBRR1_VALUE ((F_CPU / (16UL * BAUD_RATE)) - 1)
 
 FILE uart_stdout = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 FILE uart_stdin = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
 
 extern int debug;
-
-static char* speaker_buffer;
-static unsigned int speaker_buffer_length;
-static unsigned int speaker_buffer_index;
-
-ISR(TIMER1_COMPA_vect) {
-    OCR0 = speaker_buffer[speaker_buffer_index++];  // Отправляем в PWM регистр
-                                                    // (8-бит)
-    PORTD ^= (1 << PD0);
-
-    if (speaker_buffer_index >= speaker_buffer_length) {
-        TIMSK = (0 << OCIE1A);  // disable int
-        PORTD |= (1 << PD0);
-        printf("said\n");
-    }
-    sei();
-}
 
 void init_xmem() {
     // XMCRA = (1 << SRW11) | (1 << SRW10) | (1 << SRW01) | (1 << SRW00);
@@ -50,24 +31,27 @@ void init_uart() {
     UCSR1B = (1 << RXEN1) | (1 << TXEN1);    // включить RX и TX
 }
 
-void init_io() { DDRB |= (1 << PD0); }
+void init_io() { DDRB |= (1 << PB0); }
 
-void init_pwm() {        // timer 0
-    DDRB |= (1 << PB4);  // OC0 (PWM)
-    // Fast PWM, non-inverting, prescaler = 1
-    OCR0 = 0;
-    TCCR0 = (1 << WGM00) | (1 << WGM01) | (1 << COM01) | (1 << CS00);
+void init() {
+    init_xmem();
+    init_io();
+    init_uart();
+    init_player();
 }
 
-void init_timer(void) {                   // timer 1
-    TCCR1B = (1 << WGM12) | (1 << CS10);  // CTC mode, prescaler=1
-    OCR1A = 361;             // (F_CPU / SAMPLE_RATE) - 1;   // timer period
-    TIMSK |= (0 << OCIE1A);  // disable int
+void led_on() { PORTB &= ~(1 << PB0); }
+void led_off() { PORTB |= (1 << PB0); }
+
+void player_callback(volatile player_data* data) {
+    if (debug) printf("said\n");
+    // printf("> ");
+    free(data->buffer);
 }
 
 void say(char* input, int phonetic) {
     strncat(input, " ", 255);
-    printf("input: %s\n", input);
+    if (debug) printf("input: %s\n", input);
     int i;
     for (i = 0; input[i] != 0; i++) input[i] = toupper((int)input[i]);
     if (debug) {
@@ -90,29 +74,25 @@ void say(char* input, int phonetic) {
         strncat(input, "\x9b", 255);
     }
 
+    led_on();
     SetInput(input);
     if (!SAMMain()) {
         print_usage();
     }
+    led_off();
 
-    speaker_buffer = GetBuffer();
-    speaker_buffer_length = GetBufferLength() / 50;
-    free(speaker_buffer);
-    // // speaker_buffer_length = speaker_buffer_length / 50;
-    // speaker_buffer_index = 0;
-    // PORTD = (0 << PD0);
-    // TIMSK |= (1 << OCIE1A);  // enable int
+    if(debug) printf("length: %d\n", GetBufferLength() / 50);
+
+    play(make_player_data(GetBuffer(), GetBufferLength() / 50),
+         player_callback);
 }
 
 int main() {
     stdin = &uart_stdin;
     stdout = &uart_stdout;
 
-    init_xmem();
-    init_uart();
-    init_io();
-    init_pwm();
-    init_timer();
+    init();
+    sei();
 
     unsigned char number;
     int phonetic = 0;
@@ -123,15 +103,6 @@ int main() {
 
     printf("READY\n> ");
 
-    // for (;;) {
-    //     uint8_t b;
-    //     scanf("%c", &b);
-    //     PORTB ^= (1 << PD0);
-    //     printf("%c", b);
-    // }
-
-    // strncpy(input, "hello", 255);
-    // say(input, phonetic);
     while (1) {
         scanf("%255s", input);
         if (input[0] != '-') {
@@ -157,8 +128,10 @@ int main() {
         } else {
             printf("unknown command %s\n", input);
         }
-        printf("> ");
+        // printf("> ");
     }
+
+    while (1);
 
     return 0;
 }
