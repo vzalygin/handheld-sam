@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static volatile player_data data;
+static volatile player_data_t data;
 static volatile unsigned int pos;
-static volatile callback_func callback;
+static volatile callback_func_t callback;
 static volatile int blocked;
 
 void stop_pwm0() { OCR0 = 0; }
@@ -60,14 +60,14 @@ void init_player() {
     init_timer1();
 }
 
-player_data make_player_data(char* buffer, unsigned int size) {
-    player_data data;
+player_data_t make_player_data(char* buffer, unsigned int size) {
+    player_data_t data;
     data.buffer = buffer;
     data.size = size;
     return data;
 }
 
-void play(player_data _data, callback_func _callback) {
+void play(player_data_t _data, callback_func_t _callback) {
     blocked = 1;
     data = _data;
     callback = _callback;

@@ -21,7 +21,7 @@ extern unsigned char freq1data[] DATAMEM;
 
 extern unsigned char freq2data[] DATAMEM;
 
-extern unsigned char freq3data[] PROGMEM;
+extern const unsigned char freq3data[] PROGMEM;
 
 extern const unsigned char ampl1data[] PROGMEM;
 

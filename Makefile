@@ -25,6 +25,7 @@ SOURCES += $(SRCDIR)/RenderTabs.c
 SOURCES += $(SRCDIR)/sam.c
 SOURCES += $(SRCDIR)/SamTabs.c
 SOURCES += $(SRCDIR)/uart.c
+SOURCES += $(SRCDIR)/buffer.c
 
 # Objects and deps
 TARGET=$(BUILDDIR)/$(PROJECT).elf
@@ -51,7 +52,7 @@ ASMFLAGS=$(COMMON) $(CFLAGS) -x assembler-with-cpp -Wa,-gdwarf2
 
 ## Linker flags
 LDFLAGS=$(COMMON)
-LDFLAGS += -Wl,--section-start=.noinit=0x801100,--defsym=__heap_start=0x802100,--defsym=__heap_end=0x80ffff
+LDFLAGS += -Wl,--defsym,__DATA_REGION_LENGTH__=0xffa0,--section-start=.noinit=0x801100,--defsym=__heap_start=0x803100,--defsym=__heap_end=0x80ffff
 
 ## Hex/Eep flags
 HEX_FLASH_FLAGS=-R .eeprom -R .fuse -R .lock -R .signature
@@ -94,7 +95,7 @@ $(BUILDDIR)/%.lss: $(BUILDDIR)/%.elf
 
 size: $(TARGET)
 	@echo
-	@avr-size -C --mcu=${MCU} ${TARGET}
+	@avr-size ${TARGET}
 
 flash: all
 	avrdude -c usbasp -p $(MCU_SHORT) -U flash:w:$(TARGET_HEX):i
@@ -102,7 +103,12 @@ flash: all
 ## Clean
 .PHONY: clean
 clean:
-	-rm -rf $(BUILDDIR)
+ifeq ($(OS),Windows_NT)
+	rmdir /S /Q $(BUILDDIR)
+else
+	rm -rf $(BUILDDIR)
+endif
+	
 
 ## Include dependency files
 -include $(DEPS)

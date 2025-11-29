@@ -15,13 +15,14 @@ void led_on() { PORTB &= ~(1 << PB0); }
 void led_off() { PORTB |= (1 << PB0); }
 
 void init() {
+    // xmem должен стоять первым
     init_xmem();
     init_led();
     init_uart();
     init_player();
 }
 
-void player_callback(volatile player_data* data) {
+void player_callback(volatile player_data_t* data) {
     if (debug) printf("said\n");
     free(data->buffer);
 }
@@ -113,6 +114,4 @@ int main() {
     loop();
 
     while (1);
-
-    return 0;
 }

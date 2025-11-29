@@ -15,7 +15,7 @@ extern FILE uart_stdin;
 
 void init_uart();
 
-int uart_putchar(char c, FILE* stream);
-int uart_getchar(FILE* stream);
+int putchar_uart(char c, FILE* stream);
+int getchar_uart(FILE* stream);
 
 #endif

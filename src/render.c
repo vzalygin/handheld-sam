@@ -41,7 +41,7 @@ void AddInflection(unsigned char mem48, unsigned char phase1);
 unsigned char trans(unsigned char mem39212, unsigned char mem39213);
 
 // timetable for more accurate c64 simulation
-int timetable[5][5] PROGMEM = {{162, 167, 167, 127, 128},
+const int timetable[5][5] PROGMEM = {{162, 167, 167, 127, 128},
                                {226, 60, 60, 0, 0},
                                {225, 60, 59, 0, 0},
                                {200, 0, 0, 54, 55},
