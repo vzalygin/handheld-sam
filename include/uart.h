@@ -1,19 +1,21 @@
 #ifndef UART_H
 #define UART_H
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/sleep.h>
-#include <util/delay.h>
-
+#include <avr/io.h>
 #include <stdio.h>
-#include <inttypes.h>
 
 #include "memmanagment.h"
 
-int uart_putchar(char c, FILE * stream);
-int uart_getchar(FILE *stream);
+#define BAUD_RATE 9600UL
+#define UBRR1_VALUE ((F_CPU / (16UL * BAUD_RATE)) - 1)
 
-void uart_print(char * str);
+extern FILE uart_stdout;
+extern FILE uart_stdin;
+
+void init_uart();
+
+int uart_putchar(char c, FILE* stream);
+int uart_getchar(FILE* stream);
 
 #endif

@@ -14,4 +14,8 @@ player_data make_player_data(char* buffer, unsigned int size);
 
 void play(player_data data, callback_func callback);
 
+int is_player_blocked();
+
+void wait_player();
+
 #endif

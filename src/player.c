@@ -8,6 +8,7 @@
 static volatile player_data data;
 static volatile unsigned int pos;
 static volatile callback_func callback;
+static volatile int blocked;
 
 void stop_pwm0() { OCR0 = 0; }
 
@@ -44,7 +45,8 @@ ISR(TIMER1_COMPA_vect) {
     if (pos == data.size) {
         stop_pwm0();
         stop_timer1();
-        callback(&data);
+        blocked = 0;
+        if (callback != NULL) callback(&data);
         return;
     }
 
@@ -66,8 +68,13 @@ player_data make_player_data(char* buffer, unsigned int size) {
 }
 
 void play(player_data _data, callback_func _callback) {
+    blocked = 1;
     data = _data;
     callback = _callback;
     pos = 0;
     start_timer1();
 }
+
+int is_player_blocked() { return blocked; }
+
+void wait_player() { while (is_player_blocked()); }

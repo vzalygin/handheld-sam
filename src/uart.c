@@ -1,5 +1,14 @@
 #include "uart.h"
 
+void init_uart() {
+    UBRR1H = (uint8_t)(UBRR1_VALUE >> 8);
+    UBRR1L = (uint8_t)(UBRR1_VALUE);
+
+    UCSR1A = 0;                              // U2X1 = 0 (обычный режим)
+    UCSR1C = (1 << UCSZ11) | (1 << UCSZ10);  // 8 бит, без чётности, 1 стоп
+    UCSR1B = (1 << RXEN1) | (1 << TXEN1);    // включить RX и TX
+}
+
 int uart_putchar(char c, FILE* stream) {
     while (!(UCSR1A & 1 << UDRE1));
     if (c == '\n') {
@@ -14,9 +23,5 @@ int uart_getchar(FILE* stream) {
     return UDR1;
 }
 
-void uart_print(char* str) {
-    uint8_t l = strlen(str);
-    for (int i = 0; i < l; i++) {
-        uart_putchar(str[i], NULL);
-    }
-}
+FILE uart_stdout = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
+FILE uart_stdin = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);

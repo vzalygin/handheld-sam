@@ -6,46 +6,23 @@
 #include "player.h"
 #include "sam.h"
 #include "uart.h"
-
-#define BAUD_RATE 9600UL
-#define UBRR1_VALUE ((F_CPU / (16UL * BAUD_RATE)) - 1)
-
-FILE uart_stdout = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
-FILE uart_stdin = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
+#include "xmem.h"
 
 extern int debug;
 
-void init_xmem() {
-    // XMCRA = (1 << SRW11) | (1 << SRW10) | (1 << SRW01) | (1 << SRW00);
-    XMCRA = 0;
-    XMCRB = 0;
-    MCUCR = (1 << SRE);
-}
-
-void init_uart() {
-    UBRR1H = (uint8_t)(UBRR1_VALUE >> 8);
-    UBRR1L = (uint8_t)(UBRR1_VALUE);
-
-    UCSR1A = 0;                              // U2X1 = 0 (обычный режим)
-    UCSR1C = (1 << UCSZ11) | (1 << UCSZ10);  // 8 бит, без чётности, 1 стоп
-    UCSR1B = (1 << RXEN1) | (1 << TXEN1);    // включить RX и TX
-}
-
-void init_io() { DDRB |= (1 << PB0); }
+void init_led() { DDRB |= (1 << PB0); }
+void led_on() { PORTB &= ~(1 << PB0); }
+void led_off() { PORTB |= (1 << PB0); }
 
 void init() {
     init_xmem();
-    init_io();
+    init_led();
     init_uart();
     init_player();
 }
 
-void led_on() { PORTB &= ~(1 << PB0); }
-void led_off() { PORTB |= (1 << PB0); }
-
 void player_callback(volatile player_data* data) {
     if (debug) printf("said\n");
-    // printf("> ");
     free(data->buffer);
 }
 
@@ -81,19 +58,14 @@ void say(char* input, int phonetic) {
     }
     led_off();
 
-    if(debug) printf("length: %d\n", GetBufferLength() / 50);
+    if (debug) printf("length: %d\n", GetBufferLength() / 50);
 
+    wait_player();
     play(make_player_data(GetBuffer(), GetBufferLength() / 50),
          player_callback);
 }
 
-int main() {
-    stdin = &uart_stdin;
-    stdout = &uart_stdout;
-
-    init();
-    sei();
-
+void loop() {
     unsigned char number;
     int phonetic = 0;
     char input[256];
@@ -128,8 +100,17 @@ int main() {
         } else {
             printf("unknown command %s\n", input);
         }
-        // printf("> ");
     }
+}
+
+int main() {
+    stdin = &uart_stdin;
+    stdout = &uart_stdout;
+
+    init();
+    sei();
+
+    loop();
 
     while (1);
 
