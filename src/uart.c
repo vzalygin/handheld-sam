@@ -8,8 +8,8 @@
 static volatile buffer_t INPUT_BUFFER NOINITMEM;
 
 void init_uart() {
-    UBRR1H = (uint8_t)(UBRR1_VALUE >> 8);
-    UBRR1L = (uint8_t)(UBRR1_VALUE);
+    UBRR1H = (uint8_t)(UBRR_VALUE >> 8);
+    UBRR1L = (uint8_t)(UBRR_VALUE);
 
     UCSR1A = 0;                              // U2X1 = 0 (обычный режим)
     UCSR1C = (1 << UCSZ11) | (1 << UCSZ10);  // 8 бит, без чётности, 1 стоп

@@ -8,7 +8,7 @@
 #include "memmanagment.h"
 
 #define BAUD_RATE 9600UL
-#define UBRR1_VALUE ((F_CPU / (16UL * BAUD_RATE)) - 1)
+#define UBRR_VALUE ((F_CPU / (16UL * BAUD_RATE)) - 1)
 
 extern FILE uart_stdout;
 extern FILE uart_stdin;

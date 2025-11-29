@@ -22,11 +22,9 @@ void buffer_write(volatile buffer_t* buffer, char ch) {
 
 char buffer_read(volatile buffer_t* buffer) {
     char ch;
-    printf("READ buf begin %d end %d\n", buffer->begin, buffer->end);
     // блокируемся, пока в буфер кто-нибудь не напишет
     while (buffer_is_empty(buffer));
     ch = buffer->buf[buffer->begin];
     buffer->begin = (buffer->begin + 1) % BUFFER_SIZE;
-    printf("RSUC buf begin %d end %d\n", buffer->begin, buffer->end);
     return ch;
 }
