@@ -5,8 +5,11 @@
 #include "help.h"
 #include "player.h"
 #include "sam.h"
+#include "translator.h"
 #include "uart.h"
 #include "xmem.h"
+
+#define INPUT_SIZE 255
 
 extern int debug;
 
@@ -15,7 +18,7 @@ void led_on() { PORTB &= ~(1 << PB0); }
 void led_off() { PORTB |= (1 << PB0); }
 
 void init() {
-    // xmem РґРѕР»Р¶РµРЅ СЃС‚РѕСЏС‚СЊ РїРµСЂРІС‹Рј
+    // xmem должен стоять первым
     init_xmem();
     init_led();
     init_uart();
@@ -28,10 +31,15 @@ void player_callback(volatile player_data_t* data) {
 }
 
 void say(char* input, int phonetic) {
-    strncat(input, " ", 255);
+    strncat(input, " ", INPUT_SIZE);
+    char translated[INPUT_SIZE] = "\0";
+
     if (debug) printf("input: %s\n", input);
-    int i;
-    for (i = 0; input[i] != 0; i++) input[i] = toupper((int)input[i]);
+    for (int i = 0; input[i] != 0; i++) input[i] = toupper((int)input[i]);
+    translate(translated, input, INPUT_SIZE);
+    input = translated;
+    if (debug) printf("translated: %s\n", input);
+
     if (debug) {
         if (phonetic) {
             printf("phonetic input: %s\n", input);
@@ -41,7 +49,7 @@ void say(char* input, int phonetic) {
     }
 
     if (!phonetic) {
-        strncat(input, "[", 255);
+        strncat(input, "[", INPUT_SIZE);
         if (!TextToPhonemes((unsigned char*)input)) {
             return;
         }
@@ -49,7 +57,7 @@ void say(char* input, int phonetic) {
             printf("phonetic input: %s\n", input);
         }
     } else {
-        strncat(input, "\x9b", 255);
+        strncat(input, "\x9b", INPUT_SIZE);
     }
 
     led_on();
@@ -69,9 +77,9 @@ void say(char* input, int phonetic) {
 void loop() {
     unsigned char number;
     int phonetic = 0;
-    char input[256];
+    char input[INPUT_SIZE];
     int i;
-    for (i = 0; i <= 255; ++i) input[i] = 0;
+    for (i = 0; i < INPUT_SIZE; ++i) input[i] = 0;
     debug = 0;
 
     printf("READY\n> ");

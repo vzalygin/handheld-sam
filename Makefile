@@ -16,16 +16,19 @@ INCLUDEDIR=include
 # Source files
 SOURCES += $(SRCDIR)/main.c
 SOURCES += $(SRCDIR)/player.c
-SOURCES += $(SRCDIR)/debug_sam.c 
+SOURCES += $(SRCDIR)/uart.c
+SOURCES += $(SRCDIR)/buffer.c
 SOURCES += $(SRCDIR)/memmanagment.c
+SOURCES += $(SRCDIR)/translator.c
+
+# SAM source files
+SOURCES += $(SRCDIR)/sam.c
+SOURCES += $(SRCDIR)/debug_sam.c 
 SOURCES += $(SRCDIR)/reciter.c
 SOURCES += $(SRCDIR)/ReciterTabs.c
 SOURCES += $(SRCDIR)/render.c
 SOURCES += $(SRCDIR)/RenderTabs.c
-SOURCES += $(SRCDIR)/sam.c
 SOURCES += $(SRCDIR)/SamTabs.c
-SOURCES += $(SRCDIR)/uart.c
-SOURCES += $(SRCDIR)/buffer.c
 
 # Objects and deps
 TARGET=$(BUILDDIR)/$(PROJECT).elf
