@@ -34,7 +34,7 @@ int getchar_uart(FILE* stream) {
 }
 
 ISR(USART1_RX_vect) {
-    PORTB ^= (1 << PB0);
+    // PORTB ^= (1 << PB0);
     buffer_write(&INPUT_BUFFER, UDR1);
 }
 
