@@ -11,3 +11,15 @@ This repository also uses fixes from [RaafatTurki](https://github.com/s-macke/SA
 ===
 
 Built with `gcc version 7.3.0 (AVR_8_bit_GNU_Toolchain_3.7.0_1796)`.
+
+Available commands:
+
+- `make` -- build elf, hex files;
+- `make flash` -- write mcu flash; 
+- `make clean` -- clean.
+
+The connection to MCU can be established by UART 9600.
+
+The project scheme:
+
+![scheme](./scheme.png)
