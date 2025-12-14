@@ -11,23 +11,23 @@
 
 #define INPUT_SIZE 255
 
-extern int debug;
+static volatile char* current_word NOINITMEM;
 
-void init_led() { DDRB |= (1 << PB0); }
-void led_on() { PORTB &= ~(1 << PB0); }
-void led_off() { PORTB |= (1 << PB0); }
+// void init_led() { DDRB |= (1 << PB0); }
+// void led_on() { PORTB &= ~(1 << PB0); }
+// void led_off() { PORTB |= (1 << PB0); }
 
 void init() {
-    // xmem должен стоять первым
+    // xmem РґРѕР»Р¶РµРЅ СЃС‚РѕСЏС‚СЊ РїРµСЂРІС‹Рј
     init_xmem();
-    init_led();
+    // init_led();
     init_uart();
     init_player();
 }
 
 void player_callback(volatile player_data_t* data) {
-    if (debug) printf("said\n");
     free(data->buffer);
+    printf("%s\n", current_word);
 }
 
 void say(char* input, int phonetic) {
@@ -60,16 +60,17 @@ void say(char* input, int phonetic) {
         strncat(input, "\x9b", INPUT_SIZE);
     }
 
-    led_on();
+    // led_on();
     SetInput(input);
     if (!SAMMain()) {
         print_usage();
     }
-    led_off();
+    // led_off();
 
     if (debug) printf("length: %d\n", GetBufferLength() / 50);
 
     wait_player();
+    current_word = input;
     play(make_player_data(GetBuffer(), GetBufferLength() / 50),
          player_callback);
 }
@@ -93,19 +94,35 @@ void loop() {
         } else if (strcmp(input, "-debug") == 0) {
             if (!debug) {
                 debug = 1;
-                printf("debug enabled\n");
+                printf("-debug enabled\n");
             } else {
                 debug = 0;
-                printf("debug disabled\n");
+                printf("-debug disabled\n");
             }
         } else if (strcmp(input, "-pitch") == 0) {
             scanf("%hhu", &number);
             SetPitch(number);
-            printf("set pitch %hhu\n", number);
+            printf("-pitch %hhu\n", number);
         } else if (strcmp(input, "-speed") == 0) {
             scanf("%hhu", &number);
             SetSpeed(number);
-            printf("set speed %hhu\n", number);
+            printf("-speed %hhu\n", number);
+        } else if (strcmp(input, "-mouth")) {
+            scanf("%hhu", &number);
+            SetMouth(number);
+            printf("-mouth %hhu\n", number);
+        } else if (strcmp(input, "-throat")) {
+            scanf("%hhu", &number);
+            SetThroat(number);
+            printf("-throat %hhu\n", number);
+        } else if (strcmp(input, "-sing")) {
+            if (!singmode) {
+                singmode = 1;
+                printf("-sing enabled\n");
+            } else {
+                singmode = 0;
+                printf("-sing disabled\n");
+            }
         } else {
             printf("unknown command %s\n", input);
         }

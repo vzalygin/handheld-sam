@@ -16,6 +16,10 @@ int buffer_is_empty(volatile buffer_t* buffer) {
 }
 
 void buffer_write(volatile buffer_t* buffer, char ch) {
+    if ((buffer->end - buffer->begin + BUFFER_SIZE) % BUFFER_SIZE == -1) {
+        return; // писать нельзя, буфер заполнен
+    }
+
     buffer->buf[buffer->end] = ch;
     buffer->end = (buffer->end + 1) % BUFFER_SIZE;
 }

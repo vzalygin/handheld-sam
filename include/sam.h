@@ -9,6 +9,8 @@
 
 #define SAMPLE_RATE 22050
 
+extern int singmode DATAMEM;
+
 extern 
 
 void SetInput(char *_input);
