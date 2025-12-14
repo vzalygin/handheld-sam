@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <avr/delay.h>
+
 #include "help.h"
 #include "player.h"
 #include "sam.h"
@@ -11,7 +13,7 @@
 
 #define INPUT_SIZE 255
 
-static volatile char* current_word NOINITMEM;
+static volatile char player_input[INPUT_SIZE] NOINITMEM;
 
 // void init_led() { DDRB |= (1 << PB0); }
 // void led_on() { PORTB &= ~(1 << PB0); }
@@ -27,12 +29,14 @@ void init() {
 
 void player_callback(volatile player_data_t* data) {
     free(data->buffer);
-    printf("%s\n", current_word);
+    printf("%s\n", player_input);
 }
 
 void say(char* input, int phonetic) {
-    strncat(input, " ", INPUT_SIZE);
     char translated[INPUT_SIZE] = "\0";
+    char current_word[INPUT_SIZE] = "\0";
+    strcpy(current_word, input);
+    strncat(input, " ", INPUT_SIZE);
 
     if (debug) printf("input: %s\n", input);
     for (int i = 0; input[i] != 0; i++) input[i] = toupper((int)input[i]);
@@ -70,7 +74,7 @@ void say(char* input, int phonetic) {
     if (debug) printf("length: %d\n", GetBufferLength() / 50);
 
     wait_player();
-    current_word = input;
+    strcpy(player_input, current_word);
     play(make_player_data(GetBuffer(), GetBufferLength() / 50),
          player_callback);
 }
@@ -107,15 +111,15 @@ void loop() {
             scanf("%hhu", &number);
             SetSpeed(number);
             printf("-speed %hhu\n", number);
-        } else if (strcmp(input, "-mouth")) {
+        } else if (strcmp(input, "-mouth") == 0) {
             scanf("%hhu", &number);
             SetMouth(number);
             printf("-mouth %hhu\n", number);
-        } else if (strcmp(input, "-throat")) {
+        } else if (strcmp(input, "-throat") == 0) {
             scanf("%hhu", &number);
             SetThroat(number);
             printf("-throat %hhu\n", number);
-        } else if (strcmp(input, "-sing")) {
+        } else if (strcmp(input, "-sing") == 0) {
             if (!singmode) {
                 singmode = 1;
                 printf("-sing enabled\n");

@@ -10,32 +10,33 @@ static volatile unsigned int pos;
 static volatile callback_func_t callback;
 static volatile int blocked;
 
-void stop_pwm0() { OCR0 = 0; }
+void stop_pwm0() { 
+    DDRB &= ~(1 << PB4);
+    TCCR0 = 0;
+    OCR0 = 0; 
+}
+
+void start_pwm0() {
+    DDRB |= (1 << PB4);
+    // Fast PWM, non-inverting, prescaler = 1
+    // Частота ШИМ = 8 МГц / (1 * 256) ~ 31.25 кГц
+    TCCR0 = (1 << WGM00) | (1 << WGM01) |  // Fast PWM
+            (1 << COM01) |                 // non-inverting
+            (1 << CS00);                   // прескейлер /1
+    OCR0 = 0;
+}
 
 // прескейлер /1
 void start_timer1() { TCCR1B |= (1 << CS10); }
 
 void stop_timer1() { TCCR1B &= ~((1 << CS12) | (1 << CS11) | (1 << CS10)); }
 
-void init_pwm0() {
-    DDRB |= (1 << PB4);
-
-    // Fast PWM, non-inverting, prescaler = 1
-    // Частота ШИМ ≈ 8 МГц / (1 * 256) ~ 31.25 кГц
-    TCCR0 = (1 << WGM00) | (1 << WGM01) |  // Fast PWM
-            (1 << COM01) |                 // non-inverting
-            (1 << CS00);                   // предделитель = 1
-
-    stop_pwm0();
-}
-
 void init_timer1() {
-    // CTC по OCR1A
-    TCCR1A = 0;
+    TCCR1A = 0;             // CTC по OCR1A
     TCCR1B = (1 << WGM12);  // CTC mode
-    OCR1A = 362;            // 8 МГц и 22050 Гц прескейлер /1
+    OCR1A = 362;            // 8 МГц и 22050 Гц при прескейлер /1
 
-    // Разрешаем прерывание по совпадению с OCR1A
+    // Прерывание по совпадению с OCR1A
     TIMSK |= (1 << OCIE1A);
 
     stop_timer1();
@@ -56,7 +57,6 @@ ISR(TIMER1_COMPA_vect) {
 void init_player() {
     pos = 0;
     callback = NULL;
-    init_pwm0();
     init_timer1();
 }
 
@@ -72,6 +72,7 @@ void play(player_data_t _data, callback_func_t _callback) {
     data = _data;
     callback = _callback;
     pos = 0;
+    start_pwm0();
     start_timer1();
 }
 
